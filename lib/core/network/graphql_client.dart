@@ -3,7 +3,7 @@ import 'package:graphql/client.dart';
 /// Direccion del API GraphQL de PokeAPI.
 const pokeApiGraphQLUrl = 'https://graphql.pokeapi.co/v1beta2';
 
-/// Tiempo mximo que se espera a PokeAPI en cada consulta (RNF-RES-01).
+/// Tiempo maximo que se espera a PokeAPI en cada consulta (RNF-RES-01).
 /// Si no responde en 10 s, la consulta falla y el datasource remoto
 /// lo traduce a TimeoutFailure. Se usa en PokemonRemoteDataSource.
 const graphQLRequestTimeout = Duration(seconds: 10);
