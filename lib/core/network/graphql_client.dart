@@ -5,7 +5,7 @@ const pokeApiGraphQLUrl = 'https://graphql.pokeapi.co/v1beta2';
 
 /// Tiempo mximo que se espera a PokeAPI en cada consulta (RNF-RES-01).
 /// Si no responde en 10 s, la consulta falla y el datasource remoto
-/// lo traduce a TimeoutFailure.
+/// lo traduce a TimeoutFailure. Se usa en PokemonRemoteDataSource.
 const graphQLRequestTimeout = Duration(seconds: 10);
 
 /// Crea el cliente GraphQL de la app.
@@ -19,6 +19,8 @@ GraphQLClient createGraphQLClient() {
     defaultPolicies: DefaultPolicies(
       query: Policies(fetch: FetchPolicy.noCache),
     ),
-    queryRequestTimeout: graphQLRequestTimeout,
+    // El timeout se aplica en el datasource remoto con Future.timeout,
+    // porque el de la libreria falla si la respuesta llega tarde.
+    queryRequestTimeout: null,
   );
 }
