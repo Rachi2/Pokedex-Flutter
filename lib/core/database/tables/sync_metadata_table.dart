@@ -7,8 +7,9 @@ class SyncMetadataTable extends Table {
   String get tableName => 'sync_metadata';
 
   TextColumn get resourceKey => text()();
-  DateTimeColumn get lastSuccessAt => dateTime()();
-  TextColumn get status => textEnum<SyncState>()();
+  DateTimeColumn get lastSuccessAt => dateTime().nullable()();
+  TextColumn get status =>
+      textEnum<SyncState>().withDefault(Constant(SyncState.idle.name))();
   IntColumn get nextOffset => integer().withDefault(const Constant(0))();
   IntColumn get totalRemote => integer().nullable()();
 

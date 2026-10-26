@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 @DataClassName('FavoriteRow')
-class FavoritesTable extends Table{
+class FavoritesTable extends Table {
   @override
   String get tableName => 'favorites';
 
