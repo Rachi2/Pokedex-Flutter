@@ -1470,6 +1470,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'pokemon_dex_number_idx',
     'CREATE INDEX pokemon_dex_number_idx ON pokemon (dex_number)',
   );
+  late final SyncMetadataDao syncMetadataDao = SyncMetadataDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
