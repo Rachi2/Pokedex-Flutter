@@ -11,6 +11,8 @@ import 'tables/pokemon_table.dart';
 import 'tables/sync_metadata_table.dart';
 import 'tables/type_tables.dart';
 
+import 'sync_metadata_dao.dart';
+
 part 'app_database.g.dart';
 
 @DriftDatabase(
@@ -21,6 +23,7 @@ part 'app_database.g.dart';
     TypesTable,
     PokemonTypesTable,
   ],
+  daos: [SyncMetadataDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
