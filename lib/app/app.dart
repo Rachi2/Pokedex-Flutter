@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/pokemon/pokemon_providers.dart';
 
+import 'app_shell.dart';
 import 'theme.dart';
 
 class PokedexApp extends ConsumerStatefulWidget {
@@ -28,10 +29,7 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Pokedex')),
-        body: const Center(child: Text('Proyecto en construccion')),
-      ),
+      home: const AppShell(),
     );
   }
 }
