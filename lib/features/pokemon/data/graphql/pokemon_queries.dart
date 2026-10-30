@@ -1,5 +1,5 @@
 /// Cantidad de Pokemon que se piden por pagina.
-const catalogPageSize = 20;
+const catalogPageSize = 50;
 
 /// Consulta del catalogo con paginacion por offset.
 ///
