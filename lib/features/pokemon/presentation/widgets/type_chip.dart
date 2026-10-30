@@ -5,11 +5,13 @@ import '../../domain/entities/pokemon_type.dart';
 /// Colores y nombre en español de un tipo. PokeAPI manda el nombre en
 /// inglés ("grass"); la traducción es solo de presentación.
 class TypeStyle {
-  const TypeStyle(this.label, this.background, this.foreground);
+  const TypeStyle(this.label, this._lightBackground, this._lightForeground);
 
   final String label;
-  final Color background;
-  final Color foreground;
+
+  // Par del tema claro: fondo suave + texto oscuro del mismo tono.
+  final Color _lightBackground;
+  final Color _lightForeground;
 
   /// Busca el estilo de un tipo por su nombre de PokeAPI. Si llega un tipo
   /// desconocido se muestra con colores neutros y el nombre tal cual.
@@ -17,8 +19,20 @@ class TypeStyle {
       _styles[apiName] ??
       TypeStyle(apiName, const Color(0xFFECE4E3), const Color(0xFF3A3030));
 
-  // Fondo suave + texto oscuro: el contraste se mantiene en tema claro y
-  // oscuro porque cada par se diseñó junto.
+  /// Fondo del chip o del cuadro de la imagen según el tema.
+  /// En oscuro se usa el tono del tipo apagado, para no encandilar.
+  Color backgroundFor(Brightness brightness) => brightness == Brightness.dark
+      ? Color.lerp(_lightForeground, darkSurface, 0.45)!
+      : _lightBackground;
+
+  /// Fondo del tema oscuro con el que se apagan los colores.
+  static const darkSurface = Color(0xFF1A1111);
+
+  /// Color del texto según el tema. En oscuro se invierte el par: el fondo
+  /// claro pasa a ser el texto, así el contraste se mantiene.
+  Color foregroundFor(Brightness brightness) =>
+      brightness == Brightness.dark ? _lightBackground : _lightForeground;
+
   static const _styles = {
     'normal': TypeStyle('Normal', Color(0xFFEDE7DD), Color(0xFF4A4535)),
     'fire': TypeStyle('Fuego', Color(0xFFFFE1CF), Color(0xFF8A3608)),
@@ -44,23 +58,35 @@ class TypeStyle {
 /// Chip de un tipo: color de fondo + nombre escrito, para no depender solo
 /// del color.
 class TypeChip extends StatelessWidget {
-  const TypeChip({super.key, required this.type});
+  const TypeChip({super.key, required this.type, this.large = false});
 
   final PokemonType type;
 
+  /// Versión más grande para la página de detalle.
+  final bool large;
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final style = TypeStyle.of(type.name);
+    final textStyle = large
+        ? theme.textTheme.labelLarge
+        : theme.textTheme.labelMedium;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: large
+          ? const EdgeInsets.symmetric(horizontal: 14, vertical: 5)
+          : const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
-        color: style.background,
-        borderRadius: BorderRadius.circular(999),
+        color: style.backgroundFor(theme.brightness),
+        borderRadius: BorderRadius.circular(large ? 10 : 8),
       ),
       child: Text(
         style.label,
-        style: Theme.of(context).textTheme.labelMedium
-            ?.copyWith(color: style.foreground, fontWeight: FontWeight.w600),
+        style: textStyle?.copyWith(
+          color: style.foregroundFor(theme.brightness),
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

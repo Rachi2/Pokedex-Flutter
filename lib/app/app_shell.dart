@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
@@ -21,7 +23,17 @@ class _AppShellState extends ConsumerState<AppShell> {
     final syncStatus = ref.watch(catalogSyncStatusProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pokédex')),
+      appBar: AppBar(
+        title: const _BrandTitle(),
+        actions: [
+          IconButton(
+            tooltip: 'Actualizar catálogo',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () => ref.read(catalogProvider.notifier).refresh(),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: Column(
         children: [
           ConnectivityIndicator(syncStatus: syncStatus),
@@ -64,6 +76,83 @@ class _AppShellState extends ConsumerState<AppShell> {
       ),
     );
   }
+}
+
+/// Logo de la Pokéball + "Pokédex", como en el diseño aprobado.
+class _BrandTitle extends StatelessWidget {
+  const _BrandTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox.square(
+          dimension: 32,
+          child: CustomPaint(
+            painter: _PokeballPainter(outline: theme.colorScheme.onSurface),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'Pokédex',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Pokéball a color: mitad de arriba roja, de abajo blanca, franja y botón.
+class _PokeballPainter extends CustomPainter {
+  _PokeballPainter({required this.outline});
+
+  final Color outline;
+
+  static const _red = Color(0xFFC62839);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final stroke = size.width * 0.067;
+    final radius = size.width / 2 - stroke / 2;
+    final circle = Rect.fromCircle(center: center, radius: radius);
+
+    final fill = Paint()..style = PaintingStyle.fill;
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..color = outline;
+
+    // Mitades: arcos de 180° (pi). El de arriba empieza a la izquierda.
+    canvas.drawArc(circle, pi, pi, true, fill..color = _red);
+    canvas.drawArc(circle, 0, pi, true, fill..color = Colors.white);
+    canvas.drawCircle(center, radius, line);
+
+    // Franja del medio, cortada por el botón.
+    final button = radius * 0.32;
+    canvas.drawLine(
+      Offset(center.dx - radius, center.dy),
+      Offset(center.dx - button, center.dy),
+      line,
+    );
+    canvas.drawLine(
+      Offset(center.dx + button, center.dy),
+      Offset(center.dx + radius, center.dy),
+      line,
+    );
+    canvas.drawCircle(center, button, fill..color = Colors.white);
+    canvas.drawCircle(center, button, line);
+  }
+
+  @override
+  bool shouldRepaint(_PokeballPainter oldDelegate) =>
+      oldDelegate.outline != outline;
 }
 
 /// Pestaña que todavia no existe en el avance.
