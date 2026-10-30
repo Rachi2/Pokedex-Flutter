@@ -1,9 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 
 import '../providers/pokemon_detail_provider.dart';
+import '../widgets/pokemon_image.dart';
+import '../widgets/pokemon_list_tile.dart';
+import '../widgets/type_chip.dart';
 
 /// Detalle basico de un Pokemon, leido solo de la base local.
 ///
@@ -19,11 +21,7 @@ class PokemonDetailPage extends ConsumerWidget {
     final pokemon = ref.watch(pokemonDetailProvider(pokemonId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          pokemon.value == null ? 'Pokémon' : _displayName(pokemon.value!),
-        ),
-      ),
+      appBar: AppBar(title: Text(pokemon.value?.displayName ?? 'Pokémon')),
       body: switch (pokemon) {
         AsyncData(value: final Pokemon found) => _DetailBody(pokemon: found),
         AsyncData() => const Center(
@@ -46,32 +44,25 @@ class _DetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final imageUrl = pokemon.imageUrl;
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        // Imagen grande; CachedNetworkImage la guarda en disco para offline.
-        SizedBox(
-          height: 240,
-          child: imageUrl == null
-              ? const _NoImage()
-              : CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.contain,
-                  placeholder: (_, _) =>
-                      const Center(child: CircularProgressIndicator()),
-                  errorWidget: (_, _, _) => const _NoImage(),
-                ),
+        Center(
+          child: PokemonImage(
+            url: pokemon.imageUrl,
+            size: 240,
+            semanticLabel: 'Imagen de ${pokemon.displayName}',
+          ),
         ),
         const SizedBox(height: 16),
         Text(
-          _dexNumber(pokemon.nationalDexNumber),
+          pokemon.dexLabel,
           style: textTheme.titleMedium,
           textAlign: TextAlign.center,
         ),
         Text(
-          _displayName(pokemon),
+          pokemon.displayName,
           style: textTheme.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -79,37 +70,9 @@ class _DetailBody extends StatelessWidget {
         Wrap(
           alignment: WrapAlignment.center,
           spacing: 8,
-          children: [
-            for (final type in pokemon.types) Chip(label: Text(type.name)),
-          ],
+          children: [for (final type in pokemon.types) TypeChip(type: type)],
         ),
       ],
     );
   }
-}
-
-class _NoImage extends StatelessWidget {
-  const _NoImage();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.image_not_supported_outlined, size: 64),
-        SizedBox(height: 8),
-        Text('Imagen no disponible'),
-      ],
-    );
-  }
-}
-
-/// 25 -> "#025".
-String _dexNumber(int number) => '#${number.toString().padLeft(3, '0')}';
-
-/// "bulbasaur" -> "Bulbasaur".
-String _displayName(Pokemon pokemon) {
-  final name = pokemon.name;
-  if (name.isEmpty) return name;
-  return name[0].toUpperCase() + name.substring(1);
 }
