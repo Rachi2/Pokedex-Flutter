@@ -9,6 +9,8 @@ import 'domain/repositories/pokemon_repository.dart';
 import 'domain/usecases/load_next_page.dart';
 import 'domain/usecases/refresh_catalog.dart';
 import 'domain/usecases/watch_catalog.dart';
+import 'domain/usecases/watch_catalog_sync.dart';
+import 'domain/usecases/watch_pokemon.dart';
 
 // Arma la feature pokemon:
 // datasources -> coordinador -> repositorio -> casos de uso.
@@ -56,4 +58,12 @@ final loadNextPageProvider = Provider<LoadNextPage>((ref) {
 
 final refreshCatalogProvider = Provider<RefreshCatalog>((ref) {
   return RefreshCatalog(ref.watch(pokemonRepositoryProvider));
+});
+
+final watchCatalogSyncProvider = Provider<WatchCatalogSync>((ref) {
+  return WatchCatalogSync(ref.watch(pokemonRepositoryProvider));
+});
+
+final watchPokemonProvider = Provider<WatchPokemon>((ref) {
+  return WatchPokemon(ref.watch(pokemonRepositoryProvider));
 });
