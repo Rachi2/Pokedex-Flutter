@@ -18,9 +18,14 @@ extension PokemonDisplay on Pokemon {
 
   /// Número de la Pokédex nacional con tres cifras: #001, #025, #1025.
   String get dexLabel => '#${nationalDexNumber.toString().padLeft(3, '0')}';
+
+  /// Fondo del cuadro de la imagen: el color del tipo principal.
+  Color imageTint(ThemeData theme) => types.isEmpty
+      ? theme.colorScheme.surfaceContainerHighest
+      : TypeStyle.of(types.first.name).backgroundFor(theme.brightness);
 }
 
-/// Fila del catálogo: imagen, número, nombre y tipos. Tocarla abre el detalle.
+/// Fila del catálogo: imagen, nombre, número y tipos. Tocarla abre el detalle.
 class PokemonListTile extends StatelessWidget {
   const PokemonListTile({
     super.key,
@@ -28,11 +33,19 @@ class PokemonListTile extends StatelessWidget {
     required this.onTap,
   });
 
-  /// Alto fijo de cada fila. La lista lo usa como `itemExtent`, así no tiene
-  /// que medir cada fila para saber dónde va el scroll.
+  /// Alto fijo de cada fila (88 de tarjeta + 8 de separación). La lista lo
+  /// usa como `itemExtent`, así no tiene que medir cada fila para saber
+  /// dónde va el scroll.
   static const double height = 96;
 
-  static const double _imageSize = 72;
+  /// Margen de cada tarjeta; las filas grises de carga usan el mismo.
+  static const EdgeInsets margin = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 4,
+  );
+
+  static const double _boxSize = 64;
+  static const double _imageSize = 56;
 
   final Pokemon pokemon;
   final VoidCallback onTap;
@@ -40,12 +53,8 @@ class PokemonListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final types = pokemon.types;
-
-    // El área de la imagen se tiñe con el color del tipo principal.
-    final tint = types.isEmpty
-        ? theme.colorScheme.surfaceContainerHighest
-        : TypeStyle.of(types.first.name).background;
 
     final typeNames = types.map((t) => TypeStyle.of(t.name).label).join(' y ');
 
@@ -58,65 +67,73 @@ class PokemonListTile extends StatelessWidget {
           '${typeNames.isEmpty ? '' : ', tipo $typeNames'}',
       onTap: onTap,
       excludeSemantics: true,
-      child: SizedBox(
-        height: height,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Container(
-                    width: _imageSize + 8,
-                    height: double.infinity,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: tint,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: PokemonImage(
-                      url: pokemon.imageUrl,
-                      size: _imageSize,
-                      semanticLabel: 'Imagen de ${pokemon.displayName}',
-                    ),
+      child: Card(
+        margin: margin,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  width: _boxSize,
+                  height: _boxSize,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: pokemon.imageTint(theme),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          pokemon.dexLabel,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontFeatures: const [FontFeature.tabularFigures()],
+                  child: PokemonImage(
+                    url: pokemon.imageUrl,
+                    size: _imageSize,
+                    semanticLabel: 'Imagen de ${pokemon.displayName}',
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Nombre y número en la misma línea, alineados por la
+                      // base del texto aunque tengan distinto tamaño.
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              pokemon.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
-                        ),
-                        Text(
-                          pokemon.displayName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
+                          const SizedBox(width: 8),
+                          Text(
+                            pokemon.dexLabel,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 6,
-                          children: [for (final t in types) TypeChip(type: t)],
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        children: [for (final t in types) TypeChip(type: t)],
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
-              ),
+                ),
+                Icon(Icons.chevron_right, color: scheme.outline),
+              ],
             ),
           ),
         ),

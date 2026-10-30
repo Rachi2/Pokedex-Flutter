@@ -42,18 +42,42 @@ class _LoadingViewState extends State<LoadingView>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
     return Semantics(
       label: 'Cargando catálogo',
       liveRegion: true,
       child: ExcludeSemantics(
-        child: FadeTransition(
-          opacity: _pulse,
-          child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemExtent: PokemonListTile.height,
-            itemCount: widget.itemCount,
-            itemBuilder: (_, _) => const _SkeletonTile(),
-          ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+              child: Row(
+                children: [
+                  Text(
+                    'Catálogo',
+                    style: muted?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const Spacer(),
+                  Text('Descargando la primera página…', style: muted),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FadeTransition(
+                opacity: _pulse,
+                child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemExtent: PokemonListTile.height,
+                  itemCount: widget.itemCount,
+                  itemBuilder: (_, index) => _SkeletonTile(index: index),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -61,43 +85,48 @@ class _LoadingViewState extends State<LoadingView>
 }
 
 class _SkeletonTile extends StatelessWidget {
-  const _SkeletonTile();
+  const _SkeletonTile({required this.index});
+
+  final int index;
+
+  // Largos distintos para el nombre, así no parecen todas iguales.
+  static const _nameWidths = [128.0, 96.0, 144.0, 112.0, 88.0, 120.0];
 
   @override
   Widget build(BuildContext context) {
     final block = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    Widget bar(double width, double height) => Container(
+    Widget bar(double width, double height, double radius) => Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         color: block,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(radius),
       ),
     );
 
+    // Misma forma que PokemonListTile: cuadro de 64, nombre y dos chips.
     return Card(
+      margin: PokemonListTile.margin,
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Container(
-              width: 80,
-              decoration: BoxDecoration(
-                color: block,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+            bar(64, 64, 14),
             const SizedBox(width: 14),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                bar(36, 10),
-                const SizedBox(height: 8),
-                bar(120, 16),
-                const SizedBox(height: 8),
-                bar(64, 18),
+                bar(_nameWidths[index % _nameWidths.length], 14, 7),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    bar(56, 20, 8),
+                    const SizedBox(width: 6),
+                    bar(56, 20, 8),
+                  ],
+                ),
               ],
             ),
           ],
