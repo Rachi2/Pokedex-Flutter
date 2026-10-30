@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
+import 'package:pokedex/features/pokemon/presentation/pages/catalog_page.dart';
 import 'package:pokedex/features/pokemon/presentation/providers/catalog_provider.dart';
 
 /// Marco de las pantallas principales: el indicador de conectividad fijo
@@ -30,8 +31,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             child: IndexedStack(
               index: _selectedIndex,
               children: const [
-                // Se reemplaza por CatalogPage cuando este lista.
-                _ComingSoon(title: 'Catálogo'),
+                CatalogPage(),
                 _ComingSoon(title: 'Favoritos'),
                 _ComingSoon(title: 'Ajustes'),
               ],
