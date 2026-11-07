@@ -97,6 +97,11 @@ CatalogState buildCatalogState({
     return const CatalogEmpty('No hay Pokémon para mostrar.');
   }
 
+  // No hay datos y la API no responde: no se va a descargar nada solo.
+  if (service == ServiceStatus.unavailable) {
+    return const CatalogError(ServerFailure());
+  }
+
   // Comprobando la red o descargando la primera pagina.
   return const CatalogLoading();
 }
