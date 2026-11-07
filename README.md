@@ -240,8 +240,6 @@ El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia lo
 
 **Errores conocidos:**
 
-- Si la aplicación se cierra a mitad de una descarga, `sync_metadata` puede quedar en `syncing`: el indicador sigue diciendo «Sincronizando» y el scroll deja de pedir páginas. Deslizar hacia abajo con conexión lo corrige.
-- En la primera ejecución, con internet pero con PokeAPI caída, se quedan las filas de carga sin botón «Reintentar».
 - La fila del catálogo tiene un alto fijo y se desborda cuando el texto del sistema está al 130 % o más.
 
 **Pendiente para la entrega final:**
