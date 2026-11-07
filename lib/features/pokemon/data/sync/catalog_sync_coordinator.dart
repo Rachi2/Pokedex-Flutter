@@ -37,17 +37,35 @@ class CatalogSyncCoordinator {
 
   StreamSubscription<ServiceStatus>? _connectivitySubscription;
   ServiceStatus? _lastStatus;
+  var _disposed = false;
 
   /// Empieza a escuchar la conectividad. Se llama una vez al abrir la app,
   /// sin await, para que la app abra de inmediato (OF-03).
   void start() {
+    unawaited(_start());
+  }
+
+  Future<void> _start() async {
+    await _recoverInterruptedSync();
+    if (_disposed) return;
     _connectivitySubscription ??= _connectivity.watchStatus().listen(
       _onStatusChanged,
     );
   }
 
+  /// Si la app se cerro a mitad de una descarga, sync_metadata quedo en
+  /// "syncing". Se marca como fallida para no quedar trabados y para que se
+  /// reintente sola cuando haya conexion.
+  Future<void> _recoverInterruptedSync() async {
+    final metadata = await _syncDao.get(_key);
+    if (_running == null && metadata?.status == SyncState.syncing) {
+      await _syncDao.markFailed(_key);
+    }
+  }
+
   /// Deja de escuchar la conectividad.
   Future<void> dispose() async {
+    _disposed = true;
     await _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
   }
