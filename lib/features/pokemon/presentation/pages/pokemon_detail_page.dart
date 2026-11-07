@@ -5,7 +5,7 @@ import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 
 import '../providers/catalog_provider.dart';
 import '../providers/pokemon_detail_provider.dart';
-import '../widgets/pokemon_image.dart';
+import '../widgets/pokemon_art_carousel.dart';
 import '../widgets/pokemon_list_tile.dart';
 import '../widgets/type_chip.dart';
 
@@ -59,20 +59,7 @@ class _DetailBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
       children: [
-        // Cuadro grande teñido con el color del tipo principal.
-        Container(
-          height: 300,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: pokemon.imageTint(theme),
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: PokemonImage(
-            url: pokemon.imageUrl,
-            size: 240,
-            semanticLabel: 'Imagen oficial de ${pokemon.displayName}',
-          ),
-        ),
+        PokemonArtCarousel(pokemon: pokemon),
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 20, 4, 0),
           child: Column(

@@ -15,6 +15,7 @@ class PokemonImage extends StatelessWidget {
     required this.url,
     required this.size,
     required this.semanticLabel,
+    this.pixelated = false,
   });
 
   final String? url;
@@ -22,6 +23,10 @@ class PokemonImage extends StatelessWidget {
 
   /// Lo que lee el lector de pantalla, p. ej. "Imagen de Bulbasaur".
   final String semanticLabel;
+
+  /// Para el sprite: al agrandarlo se conservan los píxeles nítidos en vez de
+  /// suavizarlos.
+  final bool pixelated;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,9 @@ class PokemonImage extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.contain,
-        memCacheWidth: cacheWidth,
+        // El sprite mide 96 px, menos que su espacio: no hace falta reducirlo.
+        memCacheWidth: pixelated ? null : cacheWidth,
+        filterQuality: pixelated ? FilterQuality.none : FilterQuality.low,
         fadeInDuration: const Duration(milliseconds: 150),
         placeholder: (_, _) => SizedBox.square(dimension: size),
         errorWidget: (_, _, _) => _ImageFallback(size: size),
