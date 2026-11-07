@@ -5,7 +5,8 @@ class Pokemon {
     required this.id,
     required this.name,
     required this.nationalDexNumber,
-    required this.imageUrl,
+    required this.artworkUrl,
+    required this.spriteUrl,
     required this.types,
   });
 
@@ -14,7 +15,10 @@ class Pokemon {
   final int nationalDexNumber;
 
   /// URL del official artwork. Puede ser null si PokeAPI no la trae.
-  final String? imageUrl;
+  final String? artworkUrl;
+  final String? spriteUrl;
+
+  String? get imageUrl => artworkUrl ?? spriteUrl;
 
   final List<PokemonType> types;
 
@@ -24,7 +28,8 @@ class Pokemon {
     if (other.id != id ||
         other.name != name ||
         other.nationalDexNumber != nationalDexNumber ||
-        other.imageUrl != imageUrl ||
+        other.artworkUrl != artworkUrl ||
+        other.spriteUrl != spriteUrl ||
         other.types.length != types.length) {
       return false;
     }
@@ -35,8 +40,14 @@ class Pokemon {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, nationalDexNumber, imageUrl, Object.hashAll(types));
+  int get hashCode => Object.hash(
+    id,
+    name,
+    nationalDexNumber,
+    artworkUrl,
+    spriteUrl,
+    Object.hashAll(types),
+  );
 
   @override
   String toString() => 'Pokemon(#$nationalDexNumber $name)';
