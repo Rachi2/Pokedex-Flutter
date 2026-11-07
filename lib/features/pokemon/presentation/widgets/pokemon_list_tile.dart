@@ -23,6 +23,11 @@ extension PokemonDisplay on Pokemon {
   Color imageTint(ThemeData theme) => types.isEmpty
       ? theme.colorScheme.surfaceContainerHighest
       : TypeStyle.of(types.first.name).backgroundFor(theme.brightness);
+
+  /// Color para lo que se dibuja encima de [imageTint].
+  Color imageInk(ThemeData theme) => types.isEmpty
+      ? theme.colorScheme.onSurfaceVariant
+      : TypeStyle.of(types.first.name).foregroundFor(theme.brightness);
 }
 
 /// Fila del catálogo: imagen, nombre, número y tipos. Tocarla abre el detalle.

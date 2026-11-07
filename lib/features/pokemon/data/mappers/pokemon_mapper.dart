@@ -45,7 +45,8 @@ class PokemonMapper {
       id: pokemon.id,
       name: pokemon.name,
       nationalDexNumber: pokemon.dexNumber,
-      imageUrl: pokemon.artworkUrl ?? pokemon.spriteUrl,
+      artworkUrl: pokemon.artworkUrl,
+      spriteUrl: pokemon.spriteUrl,
       types: [
         for (final slotted in rows.types)
           PokemonType(
