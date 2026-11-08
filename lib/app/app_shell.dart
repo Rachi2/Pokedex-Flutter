@@ -92,7 +92,8 @@ class _BrandTitle extends StatelessWidget {
         SizedBox.square(
           dimension: 32,
           child: CustomPaint(
-            painter: _PokeballPainter(outline: theme.colorScheme.onSurface),
+            // Borde negro en los dos temas, como una Pokéball de verdad.
+            painter: _PokeballPainter(outline: const Color(0xFF231919)),
           ),
         ),
         const SizedBox(width: 10),
