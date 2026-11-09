@@ -127,7 +127,9 @@ class _SavedDataCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
+          color: theme.brightness == Brightness.dark
+              ? scheme.surfaceContainerLow
+              : pokemon.imageTint(theme),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
