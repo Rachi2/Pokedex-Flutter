@@ -42,7 +42,7 @@ class CatalogPage extends ConsumerWidget {
   }
 }
 
-class _CatalogList extends StatelessWidget {
+class _CatalogList extends StatefulWidget {
   const _CatalogList({
     required this.data,
     required this.onLoadMore,
@@ -53,21 +53,59 @@ class _CatalogList extends StatelessWidget {
   final Future<void> Function() onLoadMore;
   final Future<void> Function() onRefresh;
 
-  /// Cuántos píxeles antes del final se pide la siguiente página
+  @override
+  State<_CatalogList> createState() => _CatalogListState();
+}
+
+class _CatalogListState extends State<_CatalogList> {
+  /// Cuantos pixeles antes del final se pide la siguiente pagina
   /// (unas tres filas), para que llegue antes de que el usuario la vea.
   static const double _loadMoreThreshold = PokemonListTile.height * 3;
 
-  /// Solo se pide más si quedan páginas, no hay una descarga en curso y la
-  /// última no falló (si falló, el usuario decide con el botón Reintentar).
+  /// Desde cuantos pixeles de scroll aparece el boton (unas seis filas).
+  static const double _backToTopThreshold = PokemonListTile.height * 6;
+
+  final _scrollController = ScrollController();
+  var _showBackToTop = false;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// Solo se pide mas si quedan paginas, no hay una descarga en curso y la
+  /// ultima no fallo (si fallo, el usuario decide con el boton Reintentar).
   bool get _canAutoLoad =>
-      data.hasMore && !data.isLoadingMore && data.loadMoreFailure == null;
+      widget.data.hasMore &&
+      !widget.data.isLoadingMore &&
+      widget.data.loadMoreFailure == null;
 
   bool _onScroll(ScrollNotification notification) {
     if (_canAutoLoad && notification.metrics.extentAfter < _loadMoreThreshold) {
-      onLoadMore();
+      widget.onLoadMore();
     }
-    // false: la notificación sigue subiendo (la usa el RefreshIndicator).
+
+    // setState solo cuando cruza el limite, no en cada pixel de scroll.
+    final showBackToTop = notification.metrics.pixels > _backToTopThreshold;
+    if (showBackToTop != _showBackToTop) {
+      setState(() => _showBackToTop = showBackToTop);
+    }
+
+    // false: la notificacion sigue subiendo (la usa el RefreshIndicator).
     return false;
+  }
+
+  void _backToTop() {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _scrollController.jumpTo(0);
+      return;
+    }
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   void _openDetail(BuildContext context, Pokemon pokemon) {
@@ -80,36 +118,60 @@ class _CatalogList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pokemon = data.pokemon;
+    final pokemon = widget.data.pokemon;
 
-    return RefreshIndicator(
-      // Deslizar hacia abajo vuelve a pedir la primera página.
-      onRefresh: onRefresh,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: _onScroll,
-        child: ListView.builder(
-          // Siempre deslizable, para que el pull-to-refresh funcione aunque
-          // la lista sea corta.
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          // Todas las filas miden lo mismo: la lista calcula posiciones sin
-          // medir cada una y solo construye las visibles (RNF-REN-01).
-          itemExtent: PokemonListTile.height,
-          // Un elemento extra al final para el pie (cargando, error o fin).
-          itemCount: pokemon.length + 1,
-          itemBuilder: (context, index) {
-            if (index == pokemon.length) {
-              return _ListFooter(data: data, onLoadMore: onLoadMore);
-            }
-            final item = pokemon[index];
-            return PokemonListTile(
-              key: ValueKey(item.id),
-              pokemon: item,
-              onTap: () => _openDetail(context, item),
-            );
-          },
+    return Stack(
+      children: [
+        RefreshIndicator(
+          // Deslizar hacia abajo vuelve a pedir la primera pagina.
+          onRefresh: widget.onRefresh,
+          child: NotificationListener<ScrollNotification>(
+            onNotification: _onScroll,
+            child: ListView.builder(
+              controller: _scrollController,
+              // Siempre deslizable, para que el pull-to-refresh funcione aunque
+              // la lista sea corta.
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              // Todas las filas miden lo mismo: la lista calcula posiciones sin
+              // medir cada una y solo construye las visibles (RNF-REN-01).
+              itemExtent: PokemonListTile.height,
+              // Un elemento extra al final para el pie (cargando, error o fin).
+              itemCount: pokemon.length + 1,
+              itemBuilder: (context, index) {
+                if (index == pokemon.length) {
+                  return _ListFooter(
+                    data: widget.data,
+                    onLoadMore: widget.onLoadMore,
+                  );
+                }
+                final item = pokemon[index];
+                return PokemonListTile(
+                  key: ValueKey(item.id),
+                  pokemon: item,
+                  onTap: () => _openDetail(context, item),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: _showBackToTop
+                ? FloatingActionButton.small(
+                    key: const ValueKey('back-to-top'),
+                    heroTag: null,
+                    tooltip: 'Volver arriba',
+                    onPressed: _backToTop,
+                    child: const Icon(Icons.keyboard_arrow_up_rounded),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      ],
     );
   }
 }
