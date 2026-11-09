@@ -21,11 +21,27 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     final syncStatus = ref.watch(catalogSyncStatusProvider).value;
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
         title: const _BrandTitle(),
         actions: [
+          if (isLandscape)
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                // Si el texto es largo se pone pequeno en vez de salirse de la barra.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: ConnectivityIndicator(
+                    syncStatus: syncStatus,
+                    compact: true,
+                  ),
+                ),
+              ),
+            ),
           IconButton(
             tooltip: 'Actualizar catálogo',
             icon: const Icon(Icons.refresh_rounded),
@@ -36,7 +52,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       ),
       body: Column(
         children: [
-          ConnectivityIndicator(syncStatus: syncStatus),
+          if (!isLandscape) ConnectivityIndicator(syncStatus: syncStatus),
           Expanded(
             // IndexedStack mantiene cada pestaña viva al cambiar de una a otra,
             // asi el catalogo no pierde la posicion del scroll.
