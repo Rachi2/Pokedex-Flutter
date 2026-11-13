@@ -39,11 +39,12 @@ class SyncMetadataDao extends DatabaseAccessor<AppDatabase>
     String key, {
     required int nextOffset,
     int? totalRemote,
+    bool keepSyncing = false,
   }) async {
     await into(syncMetadataTable).insertOnConflictUpdate(
       SyncMetadataTableCompanion(
         resourceKey: Value(key),
-        status: const Value(SyncState.success),
+        status: Value(keepSyncing ? SyncState.syncing : SyncState.success),
         lastSuccessAt: Value(DateTime.now()),
         nextOffset: Value(nextOffset),
         totalRemote: Value.absentIfNull(
