@@ -42,12 +42,9 @@ class _AppShellState extends ConsumerState<AppShell> {
                 ),
               ),
             ),
-          IconButton(
-            tooltip: 'Actualizar catálogo',
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => ref.read(catalogProvider.notifier).refresh(),
-          ),
-          const SizedBox(width: 4),
+          // Sin botón de actualizar: con la API disponible la app actualiza
+          // sola (Online-Preferred), y a mano se desliza la lista hacia abajo.
+          const SizedBox(width: 16),
         ],
       ),
       body: Column(
