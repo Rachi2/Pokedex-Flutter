@@ -4,10 +4,10 @@ import '../../domain/entities/pokemon.dart';
 import 'pokemon_image.dart';
 import 'type_chip.dart';
 
-/// Formato de los datos de un Pokémon para mostrarlos en pantalla.
+/// Presentacion de datos: formato de un Pokémon para mostrarlo en pantalla.
 /// También lo puede usar la página de detalle.
 extension PokemonDisplay on Pokemon {
-  /// PokeAPI manda el nombre en minúsculas ("bulbasaur", "mr-mime").
+  /// Nombre bonito: PokeAPI lo manda en minúsculas ("bulbasaur", "mr-mime").
   String get displayName => name
       .split('-')
       .map(
@@ -16,21 +16,21 @@ extension PokemonDisplay on Pokemon {
       )
       .join('-');
 
-  /// Número de la Pokédex nacional con tres cifras: #001, #025, #1025.
+  /// Etiqueta de numero: Pokédex nacional con tres cifras (#001, #1025).
   String get dexLabel => '#${nationalDexNumber.toString().padLeft(3, '0')}';
 
-  /// Fondo del cuadro de la imagen: el color del tipo principal.
+  /// Tinte: fondo del cuadro de la imagen, el color del tipo principal.
   Color imageTint(ThemeData theme) => types.isEmpty
       ? theme.colorScheme.surfaceContainerHighest
       : TypeStyle.of(types.first.name).backgroundFor(theme.brightness);
 
-  /// Color para lo que se dibuja encima de [imageTint].
+  /// Tinta: color para lo que se dibuja encima de [imageTint].
   Color imageInk(ThemeData theme) => types.isEmpty
       ? theme.colorScheme.onSurfaceVariant
       : TypeStyle.of(types.first.name).foregroundFor(theme.brightness);
 }
 
-/// Fila del catálogo: imagen, nombre, número y tipos. Tocarla abre el detalle.
+/// Tarjeta de lista: imagen, nombre, número y tipos. Tocarla abre el detalle.
 class PokemonListTile extends StatelessWidget {
   const PokemonListTile({
     super.key,

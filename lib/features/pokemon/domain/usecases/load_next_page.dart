@@ -1,6 +1,6 @@
 import '../repositories/pokemon_repository.dart';
 
-/// Caso de uso: descargar la siguiente pagina del catalogo.
+/// Caso de uso de paginado: descargar la siguiente pagina del catalogo.
 class LoadNextPage {
   const LoadNextPage(this._repository);
 

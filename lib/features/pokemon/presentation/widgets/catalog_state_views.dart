@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/error/failure.dart';
 import 'pokemon_list_tile.dart';
 
+/// Vista de carga.
+///
 /// Esqueletos con la misma forma que [PokemonListTile] mientras llega la
 /// primera página. Así la pantalla no "salta" cuando aparecen los datos.
 class LoadingView extends StatefulWidget {
@@ -84,6 +86,7 @@ class _LoadingViewState extends State<LoadingView>
   }
 }
 
+/// Silueta de una fila real, en gris.
 class _SkeletonTile extends StatelessWidget {
   const _SkeletonTile({required this.index});
 
@@ -136,7 +139,8 @@ class _SkeletonTile extends StatelessWidget {
   }
 }
 
-/// No hay nada guardado todavía, p. ej. primera ejecución sin conexión.
+/// Vista vacia: no hay nada guardado todavía, p. ej. primera ejecución sin
+/// conexión.
 class EmptyView extends StatelessWidget {
   const EmptyView({
     super.key,
@@ -164,7 +168,8 @@ class EmptyView extends StatelessWidget {
   }
 }
 
-/// Falló la carga y no hay datos que mostrar. Siempre ofrece Reintentar
+/// Vista de error: falló la carga y no hay datos que mostrar. Siempre ofrece
+/// Reintentar
 /// (RF-CAT-04).
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.failure, required this.onRetry});
@@ -191,7 +196,8 @@ class ErrorView extends StatelessWidget {
   }
 }
 
-/// Diseño común de [EmptyView] y [ErrorView]: ícono, título, mensaje y botón.
+/// Plantilla de mensaje: diseño común de [EmptyView] y [ErrorView] (ícono,
+/// título, mensaje y botón).
 class _MessageView extends StatelessWidget {
   const _MessageView({
     required this.icon,

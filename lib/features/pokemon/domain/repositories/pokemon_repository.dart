@@ -1,6 +1,8 @@
 import '../entities/catalog_sync_status.dart';
 import '../entities/pokemon.dart';
 
+/// Contrato del catalogo: lo que la presentacion puede pedir, sin saber de
+/// donde salen los datos.
 abstract class PokemonRepository {
   /// Emite la lista guardada en la base local cada vez que cambia.
   Stream<List<Pokemon>> watchCatalog();

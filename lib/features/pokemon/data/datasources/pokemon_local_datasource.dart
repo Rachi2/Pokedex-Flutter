@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/app_database.dart';
 
-/// Un tipo de un Pokemon junto con su posicion (1 = principal, 2 = secundario).
+/// Casilla de tipo: un tipo guardado junto con su slot (1 = principal,
+/// 2 = secundario).
 class SlottedType {
   const SlottedType({required this.type, required this.slot});
 
@@ -9,7 +10,7 @@ class SlottedType {
   final int slot;
 }
 
-/// Un Pokemon con sus tipos, tal como esta guardado en Drift.
+/// Paquete de filas: un Pokemon con sus tipos, tal como esta en Drift.
 ///
 /// El mapper lo convierte en la entidad Pokemon (y un PokemonDto en esto).
 class PokemonWithTypes {
@@ -21,19 +22,19 @@ class PokemonWithTypes {
   final List<SlottedType> types;
 }
 
-/// Unico lugar de la app que lee y escribe el catalogo en Drift.
+/// Guardian del catalogo en Drift: unico lugar que lo lee y lo escribe.
 class PokemonLocalDataSource {
   PokemonLocalDataSource(this._db);
 
   final AppDatabase _db;
 
-  /// Emite el catalogo guardado, ordenado por numero de Pokedex,
+  /// Flujo del catalogo: emite lo guardado, ordenado por numero de Pokedex,
   /// cada vez que cambia alguna de las tablas del catalogo.
   Stream<List<PokemonWithTypes>> watchCatalog() {
     return _withTypes().watch().map(_group);
   }
 
-  /// Emite un Pokemon, o null si no esta guardado.
+  /// Flujo individual: emite un Pokemon, o null si no esta guardado.
   Stream<PokemonWithTypes?> watchById(int id) {
     final query = _withTypes()..where(_db.pokemonTable.id.equals(id));
     return query.watch().map((rows) {
@@ -42,8 +43,9 @@ class PokemonLocalDataSource {
     });
   }
 
-  /// Guarda una pagina completa en una transaccion: si el Pokemon ya existe
-  /// lo actualiza y si no lo crea, sin duplicarlo nunca (PS-06, RNF-RES-04).
+  /// Upsert por pagina: guarda una pagina completa en una transaccion. Si el
+  /// Pokemon ya existe lo actualiza y si no lo crea, sin duplicarlo nunca
+  /// (PS-06, RNF-RES-04).
   Future<void> upsertPage(List<PokemonWithTypes> page) {
     return _db.transaction(() async {
       // Se borran los tipos viejos para que, si un Pokemon cambio de tipos,
@@ -73,10 +75,10 @@ class PokemonLocalDataSource {
     });
   }
 
-  /// Cuantos Pokemon hay guardados.
+  /// Conteo: cuantos Pokemon hay guardados.
   Future<int> count() => _db.pokemonTable.count().getSingle();
 
-  /// Pokemon + sus tipos en una sola consulta.
+  /// Consulta unida: Pokemon + sus tipos en una sola consulta.
   ///
   /// Con leftOuterJoin un Pokemon sin tipos tambien aparece.
   JoinedSelectStatement<HasResultSet, dynamic> _withTypes() {
@@ -94,7 +96,7 @@ class PokemonLocalDataSource {
     ]);
   }
 
-  /// El join repite el Pokemon una vez por cada tipo; esto los junta.
+  /// Reagrupa: el join repite el Pokemon una vez por cada tipo; esto los junta.
   List<PokemonWithTypes> _group(List<TypedResult> rows) {
     final byId = <int, PokemonWithTypes>{};
 

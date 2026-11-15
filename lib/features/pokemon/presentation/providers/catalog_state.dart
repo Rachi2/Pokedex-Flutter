@@ -1,7 +1,7 @@
 import 'package:pokedex/core/error/failure.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 
-/// Lo que la pantalla del catalogo tiene que mostrar.
+/// Estados de pantalla del catalogo: lo que tiene que mostrar.
 ///
 /// Es sellada: la pantalla usa un switch y Dart obliga a cubrir
 /// los cuatro casos.
@@ -9,12 +9,12 @@ sealed class CatalogState {
   const CatalogState();
 }
 
-/// No hay datos guardados y se esta descargando la primera pagina.
+/// Espera inicial: no hay datos guardados y se descarga la primera pagina.
 final class CatalogLoading extends CatalogState {
   const CatalogLoading();
 }
 
-/// Hay Pokemon guardados para mostrar.
+/// Lista disponible: hay Pokemon guardados para mostrar.
 final class CatalogData extends CatalogState {
   const CatalogData({
     required this.pokemon,
@@ -35,14 +35,14 @@ final class CatalogData extends CatalogState {
   final Failure? loadMoreFailure;
 }
 
-/// No hay datos guardados y no se pueden descargar ahora.
+/// Sin datos ni descarga: no hay nada guardado y no se puede descargar ahora.
 final class CatalogEmpty extends CatalogState {
   const CatalogEmpty(this.message);
 
   final String message;
 }
 
-/// No hay datos guardados y la descarga fallo.
+/// Fracaso: no hay datos guardados y la descarga fallo.
 final class CatalogError extends CatalogState {
   const CatalogError(this.failure);
 

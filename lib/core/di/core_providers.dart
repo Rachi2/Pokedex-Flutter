@@ -8,19 +8,21 @@ import 'package:pokedex/features/connectivity/domain/repositories/connectivity_r
 import '../network/graphql_client.dart';
 import '../database/app_database.dart';
 
-/// Una sola AppDatabase para toda la app; se cierra al apagar Riverpod.
+/// Instancia unica de AppDatabase para toda la app; se cierra al apagar
+/// Riverpod.
 final databaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
   ref.onDispose(db.close);
   return db;
 });
 
-/// Un solo cliente GraphQL para el health check y el datasource remoto.
+/// Cliente compartido de GraphQL: lo usan el health check y el datasource
+/// remoto.
 final graphqlClientProvider = Provider<GraphQLClient>((ref) {
   return createGraphQLClient();
 });
 
-/// Repositorio que evalúa el estado de la conexión (red y servidor).
+/// Vigia de la conexion: el repositorio que evalua la red y el servidor.
 final connectivityRepositoryProvider = Provider<ConnectivityRepository>((ref) {
   return ConnectivityRepositoryImpl(
     Connectivity(),
@@ -28,7 +30,7 @@ final connectivityRepositoryProvider = Provider<ConnectivityRepository>((ref) {
   );
 });
 
-/// Stream para reaccionar en tiempo real a los cambios de conectividad.
+/// Pulso de la conexion: stream con cada cambio de estado del servicio.
 final serviceStatusProvider = StreamProvider<ServiceStatus>((ref) {
   return ref.watch(connectivityRepositoryProvider).watchStatus();
 });

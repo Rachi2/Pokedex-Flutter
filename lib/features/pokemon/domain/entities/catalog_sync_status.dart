@@ -1,5 +1,7 @@
+/// Fases de la sincronizacion: sin empezar, en curso, terminada o con error.
 enum SyncState { idle, syncing, success, error }
 
+/// Foto del estado de sincronizacion del catalogo, lista para la pantalla.
 class CatalogSyncStatus {
   const CatalogSyncStatus({
     required this.state,

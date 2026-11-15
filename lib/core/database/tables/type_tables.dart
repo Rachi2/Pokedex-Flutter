@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/tables/pokemon_table.dart';
 
+/// Tabla types: los tipos elementales (planta, fuego...) con su id.
 @DataClassName('TypeRow')
 class TypesTable extends Table {
   @override
@@ -13,6 +14,8 @@ class TypesTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Tabla pokemon_types: el puente entre cada Pokémon y sus tipos, con el
+/// slot (1 principal, 2 secundario).
 @DataClassName('PokemonTypeRow')
 class PokemonTypesTable extends Table {
   @override

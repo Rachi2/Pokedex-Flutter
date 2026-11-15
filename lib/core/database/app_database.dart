@@ -25,6 +25,8 @@ part 'app_database.g.dart';
   ],
   daos: [SyncMetadataDao],
 )
+/// Almacen local de la app: registra las cinco tablas y el DAO, y activa
+/// las claves foraneas al abrir.
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
@@ -40,6 +42,8 @@ class AppDatabase extends _$AppDatabase {
   );
 }
 
+/// Abre pokedex.sqlite en un isolate aparte, para que leer y escribir no
+/// frene la interfaz.
 QueryExecutor _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();

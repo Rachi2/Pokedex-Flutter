@@ -1,4 +1,4 @@
-/// Un tipo de un Pokemon tal como llega de PokeAPI.
+/// Tipo en crudo: un tipo de un Pokemon tal como llega de PokeAPI.
 class PokemonTypeDto {
   const PokemonTypeDto({
     required this.id,
@@ -24,7 +24,7 @@ class PokemonTypeDto {
   }
 }
 
-/// Un Pokemon con la forma del JSON de PokeAPI.
+/// Molde del JSON: un Pokemon con la forma que manda PokeAPI.
 class PokemonDto {
   const PokemonDto({
     required this.id,
@@ -45,7 +45,7 @@ class PokemonDto {
   /// Imagen a mostrar: el artwork oficial y, si no existe, el sprite normal.
   String? get imageUrl => artworkUrl ?? spriteUrl;
 
-  /// Devuelve null si el registro llega sin id o sin nombre (OF-04).
+  /// Filtro de registros: devuelve null si llega sin id o sin nombre (OF-04).
   static PokemonDto? tryFromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final name = json['name'];
@@ -88,7 +88,8 @@ class PokemonDto {
   }
 }
 
-/// Una pagina del catalogo: los Pokemon validos y el total en PokeAPI.
+/// Lote descargado: una pagina del catalogo con los Pokemon validos y el
+/// total en PokeAPI.
 class CatalogPageDto {
   const CatalogPageDto({required this.pokemon, required this.totalCount});
 

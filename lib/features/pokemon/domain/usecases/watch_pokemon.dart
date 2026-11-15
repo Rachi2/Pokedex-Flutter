@@ -1,7 +1,7 @@
 import '../entities/pokemon.dart';
 import '../repositories/pokemon_repository.dart';
 
-/// Caso de uso: observar un Pokemon guardado en la base local.
+/// Caso de uso lupa: observar un Pokemon guardado en la base local.
 class WatchPokemon {
   const WatchPokemon(this._repository);
 

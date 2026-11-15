@@ -4,7 +4,7 @@ import '../../domain/entities/pokemon.dart';
 import 'pokemon_image.dart';
 import 'pokemon_list_tile.dart';
 
-/// Cuadro grande del detalle, teñido con el color del tipo principal.
+/// Carrusel del detalle: cuadro grande teñido con el color del tipo principal.
 /// Deslizando se pasa del artwork oficial al arte en píxeles (sprite).
 ///
 /// Si el Pokémon solo tiene una imagen no hay nada que deslizar: se muestra
@@ -114,6 +114,7 @@ class _PokemonArtCarouselState extends State<PokemonArtCarousel> {
   );
 }
 
+/// Diapositiva: una de las imagenes, con su etiqueta y su URL.
 class _ArtPage {
   const _ArtPage({
     required this.label,
@@ -128,7 +129,7 @@ class _ArtPage {
   final bool pixelated;
 }
 
-/// Lo que se dibuja encima de la imagen: cuál es (arriba) y los puntos (abajo).
+/// Rotulo superpuesto: cuál imagen es (arriba) y los puntos (abajo).
 class _PageOverlay extends StatelessWidget {
   const _PageOverlay({
     required this.label,

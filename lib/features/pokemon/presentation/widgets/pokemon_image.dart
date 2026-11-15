@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-/// Imagen de un Pokémon guardada en la caché de disco, para que se vea
-/// también sin conexión.
+/// Imagen persistente: la de un Pokémon, guardada en la caché de disco para
+/// que se vea también sin conexión.
 ///
 /// - [size] es el lado del cuadrado donde se dibuja; con él se calcula
 ///   `memCacheWidth` para no decodificar un artwork de 475 px en un espacio
@@ -57,8 +57,8 @@ class PokemonImage extends StatelessWidget {
   }
 }
 
-/// Recuadro punteado con ícono. El texto solo aparece si hay espacio; en
-/// tamaños pequeños el mensaje queda en la etiqueta de accesibilidad.
+/// Respaldo visual: recuadro punteado con ícono. El texto solo aparece si
+/// hay espacio; en tamaños pequeños queda en la etiqueta de accesibilidad.
 class _ImageFallback extends StatelessWidget {
   const _ImageFallback({required this.size});
 
@@ -101,6 +101,7 @@ class _ImageFallback extends StatelessWidget {
   }
 }
 
+/// Borde punteado del respaldo: trazos de 4 px con huecos de 4 px.
 class _DashedBorderPainter extends CustomPainter {
   _DashedBorderPainter({required this.color});
 
