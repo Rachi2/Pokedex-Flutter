@@ -72,7 +72,7 @@ CatalogState buildCatalogState({
       pokemon: list,
       isLoadingMore: actions.isLoading || sync?.state == SyncState.syncing,
       hasMore: sync?.hasMorePages ?? true,
-      loadMoreFailure: actions.failure,
+      loadMoreFailure: sync?.state == SyncState.error ? actions.failure : null,
     );
   }
 
