@@ -11,10 +11,11 @@ Este README describe la entrega del **avance**. Lo que todavía no existe está 
 | Funcionalidad | Estado |
 |---|---|
 | Catálogo paginado con nombre, número, imagen y tipos | Hecho |
+| Descarga y actualización del catálogo en segundo plano (Online-Preferred) | Hecho |
 | Estados de carga, vacío y error con «Reintentar» | Hecho |
 | Consulta sin conexión, también después de reiniciar la app | Hecho |
 | Indicador global de conectividad | Hecho |
-| Detalle básico (imagen, número, nombre y tipos) | Hecho |
+| Detalle básico (carrusel de imágenes, número, nombre y tipos) | Hecho |
 | Tabla y fuente de datos de favoritos | Hecho, sin pantalla todavía |
 | Búsqueda, filtros, orden, detalle completo, favoritos y trivia | Entrega final |
 
@@ -143,6 +144,7 @@ lib/
 
 - **Fuente de verdad local.** Las pantallas observan streams de Drift. Cuando llegan datos remotos se guardan en la base, y la interfaz se entera porque la base cambió.
 - **Sin caché de GraphQL.** El cliente usa `FetchPolicy.noCache`; así no hay dos copias de los datos. La razón está en el [ADR-0001](docs/adr/0001-drift-como-fuente-de-verdad.md).
+- **Online-Preferred.** Cuando la API está disponible, la aplicación actualiza el catálogo por su cuenta, al abrirse y cada vez que vuelve la conexión, y guarda lo nuevo en la base. Lo que se ve viene siempre de la base, pero esa base se mantiene al día con PokeAPI.
 - **Sin bloqueos.** La aplicación abre de inmediato y la sincronización corre en segundo plano, sin `await` en el arranque.
 - **Degradación segura.** Si una descarga falla, se marca el error y los datos guardados se conservan.
 - **Sin conexión.** Como la interfaz solo lee de la base, el catálogo y el detalle funcionan sin internet, también tras cerrar y reabrir la aplicación.
@@ -158,14 +160,18 @@ lib/
 
 ## Estrategia de sincronización
 
-La sincronización es en una sola dirección, de PokeAPI a la base local. El catálogo **no se descarga completo** en la primera ejecución: se descarga por páginas.
+La sincronización es en una sola dirección, de PokeAPI a la base local, y se hace por páginas de 50.
+
+**Carga inicial (PS-02).** El catálogo completo se descarga **en segundo plano**, página por página, mientras el usuario navega: no hace falta esperar a que termine para usar la app. Cada página pesa unos 18 KB y tarda entre 0,25 y 0,45 s; con una pausa de medio segundo entre páginas (`pageDelay`), los 1025 Pokémon se completan en unos 15 a 20 segundos. Las imágenes no se descargan con el catálogo: se guardan la primera vez que se muestran.
 
 | Evento | Qué hace |
 |---|---|
-| Abrir la app o recuperar la API, sin datos guardados o tras un error | Descarga la siguiente página |
-| El usuario llega a unas 3 filas del final | Descarga la siguiente página |
-| Deslizar hacia abajo o tocar el botón de actualizar | Vuelve a pedir la primera página |
+| Abrir la app con la API disponible, o recuperar la conexión | **Actualización en segundo plano:** vuelve a descargar las páginas ya guardadas, sobrescribiendo con lo de PokeAPI, y después descarga las que faltan |
+| El usuario llega a unas 3 filas del final | Descarga la siguiente página, si la actualización en segundo plano no la está descargando ya |
+| Deslizar la lista hacia abajo | Actualización manual: vuelve a pedir la primera página |
 | Tocar «Reintentar» | Pide la siguiente página |
+
+**Cuándo se detiene la actualización en segundo plano:** cuando no quedan páginas, cuando se pierde la conexión con la API, cuando falla una página (queda marcado el error) o cuando se cierra la app. Al volver la conexión empieza de nuevo. Si la app se cerró a mitad de una descarga, al abrirla se marca como fallida y se retoma.
 
 ```mermaid
 sequenceDiagram
@@ -189,9 +195,11 @@ sequenceDiagram
 ```
 
 - **Sin duplicados.** Los registros se identifican por el `id` de PokeAPI y se guardan con `insertOnConflictUpdate`.
-- **Sin descargas simultáneas.** Si ya hay una en curso, `_running` devuelve esa misma en lugar de iniciar otra.
+- **Sin descargas simultáneas.** Si ya hay una en curso, `_running` devuelve esa misma en lugar de iniciar otra. La actualización en segundo plano espera a que termine la descarga que pidió el usuario antes de hacer la suya, y nunca corren dos actualizaciones a la vez (`_batch`).
 - **Escrituras completas.** Los Pokémon y los metadatos se guardan en la misma transacción: o se guarda todo o no se guarda nada.
-- **El avance no retrocede.** Actualizar la primera página no reinicia el offset guardado.
+- **El avance no retrocede.** Volver a descargar las primeras páginas no reinicia el offset guardado.
+- **Sin parpadeo.** Durante toda la actualización en segundo plano el estado queda en `syncing`, y pasa a `success` una sola vez al terminar, así el indicador no cambia en cada página (IND-06).
+- **Datos alterados.** Como cada actualización sobrescribe las filas guardadas con lo de PokeAPI, un dato del catálogo modificado en la base vuelve a su valor original la próxima vez que se abre la app o vuelve la conexión. Favoritos no se toca.
 
 ## Persistencia local
 
@@ -228,12 +236,14 @@ Para evitar parpadeos, los cambios de red esperan 1,5 segundos antes de evaluars
 | Sin conexión | No hay red | «Datos locales · última sync» y la hora |
 | Servicio no disponible | Hay red, pero la API no responde | «Datos locales · última sync» y la hora |
 
-El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia los cambios a los lectores de pantalla. Está arriba en la navegación principal y en forma compacta en el detalle.
+El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia los cambios a los lectores de pantalla. Está arriba en la navegación principal y, en forma compacta, en la barra superior del detalle y de la navegación principal en horizontal.
 
 ## Funcionalidades adicionales
 
 - Tema claro y oscuro según el sistema, con Material Design 3.
-- Deslizar hacia abajo y botón para actualizar el catálogo.
+- Deslizar la lista hacia abajo para actualizar el catálogo.
+- Botón para volver al inicio de la lista.
+- Carrusel en el detalle para pasar del artwork oficial al arte en píxeles.
 - Nombres de los tipos en español, cada uno con su color.
 
 ## Limitaciones conocidas
@@ -247,9 +257,8 @@ El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia lo
 - Búsqueda, filtros y orden.
 - Detalle completo: estadísticas, habilidades, evoluciones, movimientos y debilidades.
 - Pantalla de favoritos y trivia.
-- Detección y restauración de datos alterados en la base local (OF-19 a OF-21).
+- Restauración de datos alterados (OF-19 a OF-21): hoy se sobrescriben al abrir la app y al volver la conexión; faltan la comprobación al abrir el detalle y la periódica mientras la API responde (OF-20).
 - Reintentos automáticos con backoff y manejo específico de la limitación de peticiones.
-- Actualizar los datos al recuperar la conexión cuando ya hay datos guardados: hoy solo se sincroniza si no hay datos o si la última vez falló.
 - Límite de la caché de imágenes. Se usa la configuración por defecto, de 200 archivos, insuficiente para el catálogo completo.
 - Comprobación de conectividad duplicada: el coordinador y el indicador abren cada uno la suya.
 - Revisar `sqlite3_flutter_libs`.
