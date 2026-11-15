@@ -9,7 +9,7 @@ import '../widgets/pokemon_art_carousel.dart';
 import '../widgets/pokemon_list_tile.dart';
 import '../widgets/type_chip.dart';
 
-/// Detalle basico de un Pokemon, leido solo de la base local.
+/// Pagina de detalle basico: un Pokemon leido solo de la base local.
 ///
 /// Sirve para demostrar que se puede navegar mientras se sincroniza.
 /// El detalle completo es de la entrega final.
@@ -45,6 +45,7 @@ class PokemonDetailPage extends ConsumerWidget {
   }
 }
 
+/// Cuerpo del detalle: carrusel, numero, nombre, tipos y datos guardados.
 class _DetailBody extends StatelessWidget {
   const _DetailBody({required this.pokemon});
 
@@ -107,7 +108,7 @@ class _DetailBody extends StatelessWidget {
   }
 }
 
-/// Tarjeta "Datos guardados": deja claro que todo sale de la base local.
+/// Tarjeta de origen local: deja claro que todo sale de la base del telefono.
 class _SavedDataCard extends StatelessWidget {
   const _SavedDataCard({required this.pokemon});
 
@@ -162,6 +163,7 @@ class _SavedDataCard extends StatelessWidget {
   }
 }
 
+/// Renglon de la tarjeta: etiqueta a la izquierda y valor a la derecha.
 class _DataRow extends StatelessWidget {
   const _DataRow({required this.label, required this.value});
 

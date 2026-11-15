@@ -8,8 +8,8 @@ import '../widgets/catalog_state_views.dart';
 import '../widgets/pokemon_list_tile.dart';
 import 'pokemon_detail_page.dart';
 
-/// Pestaña del catálogo. Escucha [catalogProvider] y muestra la vista de
-/// cada estado; nunca habla con PokeAPI ni con Drift directamente.
+/// Portada: la pestaña del catálogo. Escucha [catalogProvider] y muestra la
+/// vista de cada estado; nunca habla con PokeAPI ni con Drift directamente.
 ///
 /// No tiene Scaffold propio: va dentro del AppShell, que ya pone la barra
 /// superior, el indicador de conectividad y la navegación inferior.
@@ -42,6 +42,7 @@ class CatalogPage extends ConsumerWidget {
   }
 }
 
+/// Listado desplazable: filas de alto fijo, pull-to-refresh y volver arriba.
 class _CatalogList extends StatefulWidget {
   const _CatalogList({
     required this.data,
@@ -58,11 +59,11 @@ class _CatalogList extends StatefulWidget {
 }
 
 class _CatalogListState extends State<_CatalogList> {
-  /// Cuantos pixeles antes del final se pide la siguiente pagina
-  /// (unas tres filas), para que llegue antes de que el usuario la vea.
+  /// Umbral de carga: cuantos pixeles antes del final se pide la siguiente
+  /// pagina (unas tres filas), para que llegue antes de que el usuario la vea.
   static const double _loadMoreThreshold = PokemonListTile.height * 3;
 
-  /// Desde cuantos pixeles de scroll aparece el boton (unas seis filas).
+  /// Umbral del boton: desde cuantos pixeles aparece (unas seis filas).
   static const double _backToTopThreshold = PokemonListTile.height * 6;
 
   final _scrollController = ScrollController();
@@ -74,6 +75,8 @@ class _CatalogListState extends State<_CatalogList> {
     super.dispose();
   }
 
+  /// Freno del scroll.
+  ///
   /// Solo se pide mas si quedan paginas, no hay una descarga en curso y la
   /// ultima no fallo (si fallo, el usuario decide con el boton Reintentar).
   bool get _canAutoLoad =>
@@ -81,6 +84,8 @@ class _CatalogListState extends State<_CatalogList> {
       !widget.data.isLoadingMore &&
       widget.data.loadMoreFailure == null;
 
+  /// Sensor de scroll: pide la siguiente pagina cerca del final y muestra u
+  /// oculta el boton de volver arriba.
   bool _onScroll(ScrollNotification notification) {
     if (_canAutoLoad && notification.metrics.extentAfter < _loadMoreThreshold) {
       widget.onLoadMore();
@@ -96,6 +101,7 @@ class _CatalogListState extends State<_CatalogList> {
     return false;
   }
 
+  /// Lleva la lista al inicio; sin animacion si el sistema las reduce.
   void _backToTop() {
     if (MediaQuery.disableAnimationsOf(context)) {
       _scrollController.jumpTo(0);
@@ -108,6 +114,7 @@ class _CatalogListState extends State<_CatalogList> {
     );
   }
 
+  /// Navega al detalle del Pokémon tocado.
   void _openDetail(BuildContext context, Pokemon pokemon) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -176,7 +183,7 @@ class _CatalogListState extends State<_CatalogList> {
   }
 }
 
-/// Último elemento de la lista: dice qué pasa con la siguiente página.
+/// Pie de la lista: dice qué pasa con la siguiente página.
 class _ListFooter extends StatelessWidget {
   const _ListFooter({required this.data, required this.onLoadMore});
 

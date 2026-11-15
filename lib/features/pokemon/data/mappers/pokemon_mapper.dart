@@ -5,14 +5,14 @@ import 'package:pokedex/features/pokemon/domain/entities/pokemon_type.dart';
 import '../datasources/pokemon_local_datasource.dart';
 import '../dtos/pokemon_dto.dart';
 
-/// Convierte entre las tres formas de un Pokemon:
+/// Traspaso entre las tres formas de un Pokemon:
 /// PokemonDto (JSON de PokeAPI) -> filas de Drift -> entidad Pokemon.
 ///
 /// Gracias a esto la pantalla nunca ve un DTO ni una fila de Drift.
 class PokemonMapper {
   const PokemonMapper._();
 
-  /// DTO -> filas de Drift, listas para PokemonLocalDataSource.upsertPage.
+  /// Ida a la base: DTO -> filas de Drift, listas para guardar con upsertPage.
   static PokemonWithTypes toRows(
     PokemonDto dto, {
     required DateTime updatedAt,
@@ -38,7 +38,7 @@ class PokemonMapper {
     );
   }
 
-  /// Filas de Drift -> entidad Pokemon que usa la capa de presentacion.
+  /// Vuelta a la pantalla: filas de Drift -> entidad Pokemon.
   static Pokemon toEntity(PokemonWithTypes rows) {
     final pokemon = rows.pokemon;
     return Pokemon(

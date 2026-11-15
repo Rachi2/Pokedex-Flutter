@@ -1,6 +1,6 @@
 import '../repositories/pokemon_repository.dart';
 
-/// Caso de uso: volver a pedir la primera pagina del catalogo.
+/// Caso de uso de recarga: volver a pedir la primera pagina del catalogo.
 class RefreshCatalog {
   const RefreshCatalog(this._repository);
 

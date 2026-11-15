@@ -1,7 +1,7 @@
-/// Cantidad de Pokemon que se piden por pagina.
+/// Medida de cada pagina: cuantos Pokemon se piden por consulta.
 const catalogPageSize = 50;
 
-/// Consulta del catalogo con paginacion por offset.
+/// Consulta GraphQL del catalogo con paginacion por offset.
 ///
 /// - Ordena por id para que las paginas siempre salgan en el mismo orden.
 /// - Filtra is_default = true: solo la forma principal de cada especie

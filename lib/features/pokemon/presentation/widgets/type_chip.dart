@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/entities/pokemon_type.dart';
 
-/// Colores y nombre en español de un tipo. PokeAPI manda el nombre en
+/// Estilo de tipo: colores y nombre en español. PokeAPI manda el nombre en
 /// inglés ("grass"); la traducción es solo de presentación.
 class TypeStyle {
   const TypeStyle(this.label, this._lightBackground, this._lightForeground);
@@ -33,6 +33,7 @@ class TypeStyle {
   Color foregroundFor(Brightness brightness) =>
       brightness == Brightness.dark ? _lightBackground : _lightForeground;
 
+  /// Tabla de traduccion: nombre de PokeAPI -> etiqueta y colores.
   static const _styles = {
     'normal': TypeStyle('Normal', Color(0xFFEDE7DD), Color(0xFF4A4535)),
     'fire': TypeStyle('Fuego', Color(0xFFFFE1CF), Color(0xFF8A3608)),
@@ -55,7 +56,7 @@ class TypeStyle {
   };
 }
 
-/// Chip de un tipo: color de fondo + nombre escrito, para no depender solo
+/// Insignia de tipo: color de fondo + nombre escrito, para no depender solo
 /// del color.
 class TypeChip extends StatelessWidget {
   const TypeChip({super.key, required this.type, this.large = false});

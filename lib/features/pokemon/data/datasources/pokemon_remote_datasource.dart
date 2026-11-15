@@ -9,13 +9,13 @@ import 'package:pokedex/core/network/graphql_client.dart';
 import '../dtos/pokemon_dto.dart';
 import '../graphql/pokemon_queries.dart';
 
-/// Unico lugar de la app que usa el cliente GraphQL.
+/// Mensajero de PokeAPI: unico lugar de la app que usa el cliente GraphQL.
 class PokemonRemoteDataSource {
   PokemonRemoteDataSource(this._client);
 
   final GraphQLClient _client;
 
-  /// Descarga una pagina del catalogo desde PokeAPI.
+  /// Pedido de pagina: descarga una pagina del catalogo desde PokeAPI.
   ///
   /// Lanza NetworkFailure, TimeoutFailure, ServerFailure o UnknownFailure
   /// si algo sale mal.
@@ -66,7 +66,7 @@ class PokemonRemoteDataSource {
     }
   }
 
-  /// Traduce los errores tecnicos de GraphQL a los Failure de la app.
+  /// Clasificador de errores: pasa los de GraphQL a los Failure de la app.
   Failure _toFailure(OperationException exception) {
     final linkException = exception.linkException;
 

@@ -6,11 +6,11 @@ import 'package:graphql/client.dart';
 import '../domain/entities/service_status.dart';
 import '../domain/repositories/connectivity_repository.dart';
 
-/// Consulta mínima para saber si PokeAPI responde (IND-02).
+/// Sonda: consulta mínima para saber si PokeAPI responde (IND-02).
 const _healthCheckQuery = '{ __typename }';
 
-/// Implementación de [ConnectivityRepository] que verifica de forma combinada
-/// el estado de red del dispositivo y la disponibilidad real de la PokeAPI.
+/// Doble chequeo de conectividad: mira la red del dispositivo y, si hay,
+/// prueba que PokeAPI responda de verdad.
 class ConnectivityRepositoryImpl implements ConnectivityRepository {
   ConnectivityRepositoryImpl(
     this._connectivity,
@@ -43,7 +43,7 @@ class ConnectivityRepositoryImpl implements ConnectivityRepository {
     return _pingApi();
   }
 
-  /// Ejecuta la consulta GraphQL mínima contra la PokeAPI.
+  /// Latido de PokeAPI: ejecuta la consulta GraphQL mínima.
   /// Si ocurre un error o el tiempo supera [healthCheckTimeout], asume que está caída (unavailable).
   Future<ServiceStatus> _pingApi() async {
     try {
@@ -63,6 +63,9 @@ class ConnectivityRepositoryImpl implements ConnectivityRepository {
     }
   }
 
+  /// Escucha continua: emite "checking" y luego el resultado de cada
+  /// comprobacion. Revisa al cambiar la red (tras [debounce]) y cada
+  /// [recheckInterval], y solo emite cuando el estado cambia.
   @override
   Stream<ServiceStatus> watchStatus() {
     late final StreamController<ServiceStatus> controller;

@@ -12,21 +12,25 @@ import 'domain/usecases/watch_catalog.dart';
 import 'domain/usecases/watch_catalog_sync.dart';
 import 'domain/usecases/watch_pokemon.dart';
 
-// Arma la feature pokemon:
+// Ensamblaje de la feature pokemon:
 // datasources -> coordinador -> repositorio -> casos de uso.
 // Para una prueba se puede reemplazar cualquier pieza con overrides
 // del ProviderScope (RNF-MAN-03).
 
+/// Conducto remoto: el datasource que habla con PokeAPI.
 final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
   ref,
 ) {
   return PokemonRemoteDataSource(ref.watch(graphqlClientProvider));
 });
 
+/// Conducto local: el datasource del catalogo en Drift.
 final pokemonLocalDataSourceProvider = Provider<PokemonLocalDataSource>((ref) {
   return PokemonLocalDataSource(ref.watch(databaseProvider));
 });
 
+/// Director de descargas: el coordinador, que deja de escuchar la red al
+/// apagarse Riverpod.
 final catalogSyncCoordinatorProvider = Provider<CatalogSyncCoordinator>((ref) {
   final database = ref.watch(databaseProvider);
   final coordinator = CatalogSyncCoordinator(
@@ -40,6 +44,7 @@ final catalogSyncCoordinatorProvider = Provider<CatalogSyncCoordinator>((ref) {
   return coordinator;
 });
 
+/// Repositorio del catalogo, armado con sus tres piezas.
 final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   return PokemonRepositoryImpl(
     local: ref.watch(pokemonLocalDataSourceProvider),
@@ -48,6 +53,7 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   );
 });
 
+/// Atajos de los casos de uso para la presentacion (este y los de abajo).
 final watchCatalogProvider = Provider<WatchCatalog>((ref) {
   return WatchCatalog(ref.watch(pokemonRepositoryProvider));
 });

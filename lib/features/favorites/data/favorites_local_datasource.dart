@@ -1,12 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/app_database.dart';
 
-/// Gestiona las operaciones de base de datos para los Pokémon favoritos.
+/// Libreta de favoritos: lee y escribe la tabla favorites.
 class FavoritesLocalDataSource {
   FavoritesLocalDataSource(this._db);
   final AppDatabase _db;
 
-  /// Emite en tiempo real un conjunto con los IDs de todos los favoritos.
+  /// Coleccion viva: emite los IDs de todos los favoritos cada vez que cambian.
   Stream<Set<int>> watchIds() {
     return _db
         .select(_db.favoritesTable)
@@ -14,7 +14,7 @@ class FavoritesLocalDataSource {
         .map((rows) => rows.map((row) => row.pokemonId).toSet());
   }
 
-  /// Agrega o quita un favorito. Devuelve true si quedó como favorito.
+  /// Interruptor: agrega o quita un favorito; devuelve true si quedó marcado.
   Future<bool> toggle(int pokemonId) {
     return _db.transaction(() async {
       final deletedRows = await (_db.delete(

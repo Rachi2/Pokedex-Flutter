@@ -8,21 +8,22 @@ import 'package:pokedex/features/pokemon/pokemon_providers.dart';
 
 import 'catalog_state.dart';
 
-/// Los Pokemon guardados en Drift; emite cada vez que cambian.
+/// Fuente de la lista: los Pokemon guardados en Drift, cada vez que cambian.
 final catalogPokemonProvider = StreamProvider<List<Pokemon>>((ref) {
   return ref.watch(watchCatalogProvider)();
 });
 
-/// Estado y fecha de la ultima sincronizacion del catalogo.
+/// Termometro de la sincronizacion: estado y fecha de la ultima.
 final catalogSyncStatusProvider = StreamProvider<CatalogSyncStatus>((ref) {
   return ref.watch(watchCatalogSyncProvider)();
 });
 
-/// Estado de la pantalla del catalogo, con loadMore(), retry() y refresh().
+/// Cerebro de la pantalla del catalogo, con loadMore(), retry() y refresh().
 final catalogProvider = NotifierProvider<CatalogNotifier, CatalogState>(
   CatalogNotifier.new,
 );
 
+/// Arma el CatalogState y reenvia las acciones del usuario.
 class CatalogNotifier extends Notifier<CatalogState> {
   @override
   CatalogState build() {
@@ -39,17 +40,17 @@ class CatalogNotifier extends Notifier<CatalogState> {
     return ref.read(catalogActionsProvider.notifier).loadMore();
   }
 
-  /// Vuelve a intentar despues de un error.
+  /// Segundo intento despues de un error.
   Future<void> retry() => loadMore();
 
-  /// Vuelve a pedir la primera pagina (deslizar hacia abajo).
+  /// Gesto de actualizar: vuelve a pedir la primera pagina.
   Future<void> refresh() {
     return ref.read(catalogActionsProvider.notifier).refresh();
   }
 }
 
-/// Combina la base local, la sincronizacion y la conectividad
-/// en el estado que ve la pantalla.
+/// Decisor de pantalla: combina la base local, la sincronizacion y la
+/// conectividad en el estado que ve la pantalla.
 CatalogState buildCatalogState({
   required AsyncValue<List<Pokemon>> pokemon,
   required CatalogSyncStatus? sync,
@@ -106,7 +107,7 @@ CatalogState buildCatalogState({
   return const CatalogLoading();
 }
 
-/// Lo que esta pasando con las acciones que pidio el usuario.
+/// Acciones en curso: lo que pasa con lo que pidio el usuario.
 class CatalogActionsState {
   const CatalogActionsState({this.isLoading = false, this.failure});
 
@@ -116,7 +117,7 @@ class CatalogActionsState {
   final Failure? failure;
 }
 
-/// Guarda el estado de loadMore y refresh en su propio provider:
+/// Memoria de acciones: el estado de loadMore y refresh en su propio provider:
 /// CatalogNotifier se vuelve a crear cada vez que cambia la base local,
 /// y asi este estado no se pierde.
 final catalogActionsProvider =
@@ -124,6 +125,7 @@ final catalogActionsProvider =
       CatalogActionsNotifier.new,
     );
 
+/// Ejecuta una accion a la vez y guarda su error, si lo hubo.
 class CatalogActionsNotifier extends Notifier<CatalogActionsState> {
   @override
   CatalogActionsState build() => const CatalogActionsState();
@@ -132,6 +134,7 @@ class CatalogActionsNotifier extends Notifier<CatalogActionsState> {
 
   Future<void> refresh() => _run(ref.read(refreshCatalogProvider).call);
 
+  /// Candado: si ya hay una accion en curso, ignora la nueva.
   Future<void> _run(Future<void> Function() action) async {
     if (state.isLoading) return;
 

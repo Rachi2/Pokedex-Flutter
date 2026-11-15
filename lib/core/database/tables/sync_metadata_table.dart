@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/features/pokemon/domain/entities/catalog_sync_status.dart';
 
+/// Tabla sync_metadata: el expediente de cada recurso sincronizado: estado,
+/// siguiente offset, total de PokeAPI y hora del ultimo exito.
 @DataClassName('SyncMetadataRow')
 class SyncMetadataTable extends Table {
   @override

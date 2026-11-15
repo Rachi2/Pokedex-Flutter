@@ -8,7 +8,7 @@ import '../datasources/pokemon_local_datasource.dart';
 import '../mappers/pokemon_mapper.dart';
 import '../sync/catalog_sync_coordinator.dart';
 
-/// Cumple el contrato PokemonRepository.
+/// Intermediario del catalogo: cumple el contrato PokemonRepository.
 ///
 /// Los watch... leen solo de Drift; las descargas se las pide al coordinador.
 class PokemonRepositoryImpl implements PokemonRepository {
@@ -47,7 +47,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
     return _syncDao.watch(SyncMetadataDao.catalogKey).map(_toSyncStatus);
   }
 
-  /// Fila de sync_metadata -> entidad del dominio.
+  /// Conversion de estado: fila de sync_metadata -> entidad del dominio.
   CatalogSyncStatus _toSyncStatus(SyncMetadataRow? row) {
     if (row == null) return const CatalogSyncStatus(state: SyncState.idle);
 

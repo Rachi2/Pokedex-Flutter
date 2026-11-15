@@ -5,7 +5,7 @@ import '../../../../core/di/core_providers.dart';
 import '../../../pokemon/domain/entities/catalog_sync_status.dart';
 import '../../domain/entities/service_status.dart';
 
-/// Indicador de conectividad (IND-01): dice si hay conexión y de dónde salen
+/// Letrero de conectividad (IND-01): dice si hay conexión y de dónde salen
 /// los datos que se ven.
 ///
 /// - Normal: tarjeta bajo la barra superior, con ícono, estado y una segunda
@@ -62,6 +62,7 @@ class ConnectivityIndicator extends ConsumerWidget {
   }
 }
 
+/// Tarjeta ancha bajo la cabecera: ícono, estado y una segunda línea.
 class _IndicatorCard extends StatelessWidget {
   const _IndicatorCard({super.key, required this.look, required this.colors});
 
@@ -124,7 +125,7 @@ class _IndicatorCard extends StatelessWidget {
   }
 }
 
-/// Versión corta: ícono + "En línea · 10:42".
+/// Capsula compacta: ícono + "En línea · 10:42".
 class _IndicatorPill extends StatelessWidget {
   const _IndicatorPill({super.key, required this.look, required this.colors});
 
@@ -161,12 +162,13 @@ class _IndicatorPill extends StatelessWidget {
   }
 }
 
+/// Los cinco aspectos posibles del indicador.
 enum _Kind { checking, online, syncing, offline, unavailable }
 
 /// Un par de colores: fondo y texto.
 typedef _Colors = ({Color background, Color foreground});
 
-/// Todo lo que cambia entre estados: colores, ícono y textos.
+/// Vestuario del indicador: colores, ícono y textos de cada estado.
 class _IndicatorLook {
   const _IndicatorLook({
     required this.kind,
@@ -218,6 +220,8 @@ class _IndicatorLook {
         )
       : light;
 
+  /// Traductor de estado: combina la conexión y la sincronización en lo
+  /// que se muestra.
   factory _IndicatorLook.from(ServiceStatus status, CatalogSyncStatus? sync) {
     final lastSync = sync?.lastSyncedAt;
     final time = lastSync == null ? null : _formatTime(lastSync);
@@ -279,7 +283,7 @@ class _IndicatorLook {
     };
   }
 
-  /// "09:15" si fue hoy; "28/10 09:15" si fue otro día.
+  /// Formato de hora: "09:15" si fue hoy; "28/10 09:15" si fue otro día.
   static String _formatTime(DateTime at) {
     final local = at.toLocal();
     final now = DateTime.now();

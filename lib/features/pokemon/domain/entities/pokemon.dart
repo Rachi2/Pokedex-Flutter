@@ -1,5 +1,7 @@
 import 'pokemon_type.dart';
 
+/// Entidad Pokemon: lo que la app sabe de un Pokémon, sin rastro de GraphQL
+/// ni de Drift.
 class Pokemon {
   const Pokemon({
     required this.id,
@@ -18,6 +20,7 @@ class Pokemon {
   final String? artworkUrl;
   final String? spriteUrl;
 
+  /// Imagen preferida: el artwork y, si no hay, el sprite.
   String? get imageUrl => artworkUrl ?? spriteUrl;
 
   final List<PokemonType> types;

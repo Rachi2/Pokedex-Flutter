@@ -6,7 +6,7 @@ import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_
 import 'package:pokedex/features/pokemon/presentation/pages/catalog_page.dart';
 import 'package:pokedex/features/pokemon/presentation/providers/catalog_provider.dart';
 
-/// Marco de las pantallas principales: el indicador de conectividad fijo
+/// Armazon de las pantallas principales: el indicador de conectividad fijo
 /// arriba (IND-01) y la barra de navegacion inferior.
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
@@ -91,7 +91,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 }
 
-/// Logo de la Pokéball + "Pokédex", como en el diseño aprobado.
+/// Emblema de la cabecera: la Pokéball + "Pokédex", como en el diseño.
 class _BrandTitle extends StatelessWidget {
   const _BrandTitle();
 
@@ -122,7 +122,8 @@ class _BrandTitle extends StatelessWidget {
   }
 }
 
-/// Pokéball a color: mitad de arriba roja, de abajo blanca, franja y botón.
+/// Trazado de la Pokéball a color: mitad de arriba roja, de abajo blanca,
+/// franja y botón.
 class _PokeballPainter extends CustomPainter {
   _PokeballPainter({required this.outline});
 
@@ -169,7 +170,7 @@ class _PokeballPainter extends CustomPainter {
       oldDelegate.outline != outline;
 }
 
-/// Pestaña que todavia no existe en el avance.
+/// Pestaña provisional: Favoritos y Ajustes todavia no existen.
 class _ComingSoon extends StatelessWidget {
   const _ComingSoon({required this.title});
 

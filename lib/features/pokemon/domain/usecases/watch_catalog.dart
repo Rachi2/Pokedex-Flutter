@@ -1,7 +1,7 @@
 import '../entities/pokemon.dart';
 import '../repositories/pokemon_repository.dart';
 
-/// Caso de uso: observar el catalogo guardado en la base local.
+/// Caso de uso vitrina: observar el catalogo guardado en la base local.
 class WatchCatalog {
   const WatchCatalog(this._repository);
 

@@ -5,6 +5,8 @@ import 'package:pokedex/features/pokemon/pokemon_providers.dart';
 import 'app_shell.dart';
 import 'theme.dart';
 
+/// Envoltorio de la app: crea el MaterialApp con los temas claro y oscuro
+/// y abre el AppShell.
 class PokedexApp extends ConsumerStatefulWidget {
   const PokedexApp({super.key});
 
@@ -16,7 +18,7 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
   @override
   void initState() {
     super.initState();
-    // Arranca la sincronizacion sin await: la app abre de inmediato
+    // Encendido de la sincronizacion: sin await, la app abre de inmediato
     // y el catalogo se descarga en segundo plano (OF-03).
     ref.read(catalogSyncCoordinatorProvider).start();
   }

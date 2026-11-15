@@ -1,3 +1,4 @@
+/// Tipo con posicion: id, nombre en ingles y slot (1 principal, 2 secundario).
 class PokemonType {
   const PokemonType({required this.id, required this.name, required this.slot})
     : assert(slot == 1 || slot == 2, 'slot debe ser 1 o 2');

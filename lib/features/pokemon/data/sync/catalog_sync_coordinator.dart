@@ -14,7 +14,7 @@ import '../datasources/pokemon_remote_datasource.dart';
 import '../graphql/pokemon_queries.dart';
 import '../mappers/pokemon_mapper.dart';
 
-/// Coordina la descarga del catalogo: PokeAPI -> Drift.
+/// Orquesta la descarga del catalogo: PokeAPI -> Drift.
 class CatalogSyncCoordinator {
   CatalogSyncCoordinator({
     required this._database,
@@ -30,25 +30,28 @@ class CatalogSyncCoordinator {
   final PokemonLocalDataSource _local;
   final SyncMetadataDao _syncDao;
   final ConnectivityRepository _connectivity;
+
+  /// Pausa entre paginas de la actualizacion en segundo plano.
   final Duration pageDelay;
 
   static const _key = SyncMetadataDao.catalogKey;
 
-  /// La descarga en curso, o null si no hay ninguna.
+  /// Descarga activa: la que esta en curso, o null si no hay ninguna.
   Future<void>? _running;
 
-  /// La actualizacion en segundo plano en curso, o null si no hay ninguna.
+  /// Tanda activa: la actualizacion en segundo plano en curso, o null.
   Future<void>? _batch;
 
-  /// La conexion volvio durante una actualizacion: al terminar, otra.
+  /// Repeticion pendiente: la conexion volvio durante una actualizacion, asi
+  /// que al terminar se hace otra.
   var _updateAgain = false;
 
   StreamSubscription<ServiceStatus>? _connectivitySubscription;
   ServiceStatus? _lastStatus;
   var _disposed = false;
 
-  /// Empieza a escuchar la conectividad. Se llama una vez al abrir la app,
-  /// sin await, para que la app abra de inmediato (OF-03).
+  /// Arranque del coordinador: empieza a escuchar la conectividad. Se llama
+  /// una vez al abrir la app, sin await, para que abra de inmediato (OF-03).
   void start() {
     unawaited(_start());
   }
@@ -61,6 +64,8 @@ class CatalogSyncCoordinator {
     );
   }
 
+  /// Rescate de una descarga cortada.
+  ///
   /// Si la app se cerro a mitad de una descarga, sync_metadata quedo en
   /// "syncing". Se marca como fallida para no quedar trabados y para que se
   /// reintente sola cuando haya conexion.
@@ -71,14 +76,14 @@ class CatalogSyncCoordinator {
     }
   }
 
-  /// Deja de escuchar la conectividad.
+  /// Fin de la escucha: deja de escuchar la conectividad.
   Future<void> dispose() async {
     _disposed = true;
     await _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
   }
 
-  /// Descarga la siguiente pagina del catalogo.
+  /// Siguiente pagina a pedido del usuario (scroll o Reintentar).
   ///
   /// Si ya hay una descarga en curso devuelve esa misma en vez de empezar
   /// otra (RNF-RES-03).
@@ -86,11 +91,13 @@ class CatalogSyncCoordinator {
     return _running ??= _syncNextPage().whenComplete(() => _running = null);
   }
 
-  /// Vuelve a pedir la primera pagina sin borrar lo que ya esta guardado.
+  /// Refresco manual: vuelve a pedir la primera pagina sin borrar nada.
   Future<void> refresh() {
     return _running ??= _syncPage(0).whenComplete(() => _running = null);
   }
 
+  /// Disparador de la actualizacion.
+  ///
   /// Al abrir la app con la API disponible y cada vez que vuelve la conexion,
   /// actualiza el catalogo (OF-12).
   void _onStatusChanged(ServiceStatus status) {
@@ -99,6 +106,8 @@ class CatalogSyncCoordinator {
     if (cameBack) unawaited(_updateCatalog());
   }
 
+  /// Puerta de la actualizacion: deja pasar una sola a la vez.
+  ///
   /// Si ya hay una actualizacion en segundo plano devuelve esa misma, y anota
   /// que al terminar hay que hacer otra: la conexion volvio mientras corria y
   /// esa tanda pudo haberse detenido por la caida.
@@ -115,6 +124,8 @@ class CatalogSyncCoordinator {
     });
   }
 
+  /// Recorrido completo del catalogo.
+  ///
   /// Online-Preferred (P-02): con la API disponible, primero vuelve a
   /// descargar las paginas ya guardadas, para que lo que se ve sea la version
   /// actual de PokeAPI (y si un dato se altero en la base, se sobrescribe),
@@ -150,6 +161,8 @@ class CatalogSyncCoordinator {
     }
   }
 
+  /// Turnos: una descarga a la vez.
+  ///
   /// Ejecuta una descarga sin pisar otra: si el usuario ya pidio una pagina,
   /// espera a que termine y luego hace la suya.
   Future<void> _exclusive(Future<void> Function() download) async {
@@ -164,14 +177,18 @@ class CatalogSyncCoordinator {
     await (_running = download().whenComplete(() => _running = null));
   }
 
+  /// Permiso para descargar: hay API y el coordinador sigue vivo.
   bool get _canDownload => !_disposed && (_lastStatus?.canReachApi ?? false);
 
+  /// Mas por bajar: true si no se conoce el total o si falta llegar a el.
   Future<bool> _hasMorePages() async {
     final metadata = await _syncDao.get(_key);
     final total = metadata?.totalRemote;
     return total == null || (metadata?.nextOffset ?? 0) < total;
   }
 
+  /// Cierre de la tanda.
+  ///
   /// Al terminar la tanda (completa, o cortada porque se fue la red) el
   /// estado sigue en "syncing": se pasa a "success" con lo que se guardo.
   Future<void> _finishBatch() async {
@@ -182,6 +199,7 @@ class CatalogSyncCoordinator {
     }
   }
 
+  /// Continua desde el offset guardado; si ya se llego al total, no pide nada.
   Future<void> _syncNextPage({bool keepSyncing = false}) async {
     final metadata = await _syncDao.get(_key);
     final offset = metadata?.nextOffset ?? 0;
@@ -194,7 +212,7 @@ class CatalogSyncCoordinator {
     await _syncPage(offset, keepSyncing: keepSyncing);
   }
 
-  /// Descarga la pagina que empieza en [offset] y la guarda en Drift.
+  /// Unidad de descarga: baja la pagina que empieza en [offset] y la guarda.
   ///
   /// Si algo falla marca el estado como error y no borra nada.
   Future<void> _syncPage(int offset, {bool keepSyncing = false}) async {
