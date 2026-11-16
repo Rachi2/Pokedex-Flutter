@@ -38,7 +38,7 @@ abstract final class AppTheme {
         indicatorColor: scheme.secondaryContainer,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
-      // Objetivos táctiles de al menos 48x48 (RNF-ACC-03).
+      // Objetivos táctiles de al menos 48x48.
       materialTapTargetSize: MaterialTapTargetSize.padded,
     );
   }

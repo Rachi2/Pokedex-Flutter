@@ -45,7 +45,7 @@ class PokemonDto {
   /// Imagen a mostrar: el artwork oficial y, si no existe, el sprite normal.
   String? get imageUrl => artworkUrl ?? spriteUrl;
 
-  /// Filtro de registros: devuelve null si llega sin id o sin nombre (OF-04).
+  /// Filtro de registros: devuelve null si llega sin id o sin nombre.
   static PokemonDto? tryFromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final name = json['name'];

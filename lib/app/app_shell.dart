@@ -7,7 +7,7 @@ import 'package:pokedex/features/pokemon/presentation/pages/catalog_page.dart';
 import 'package:pokedex/features/pokemon/presentation/providers/catalog_provider.dart';
 
 /// Armazon de las pantallas principales: el indicador de conectividad fijo
-/// arriba (IND-01) y la barra de navegacion inferior.
+/// arriba y la barra de navegacion inferior.
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 

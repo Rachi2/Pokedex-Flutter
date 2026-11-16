@@ -25,7 +25,7 @@ class PokemonDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // El indicador sigue visible fuera del catalogo (IND-01).
+        // El indicador sigue visible fuera del catalogo.
         actions: [
           ConnectivityIndicator(syncStatus: syncStatus, compact: true),
           const SizedBox(width: 16),

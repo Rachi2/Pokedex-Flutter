@@ -5,7 +5,7 @@ import '../../../../core/di/core_providers.dart';
 import '../../../pokemon/domain/entities/catalog_sync_status.dart';
 import '../../domain/entities/service_status.dart';
 
-/// Letrero de conectividad (IND-01): dice si hay conexión y de dónde salen
+/// Letrero de conectividad: dice si hay conexión y de dónde salen
 /// los datos que se ven.
 ///
 /// - Normal: tarjeta bajo la barra superior, con ícono, estado y una segunda

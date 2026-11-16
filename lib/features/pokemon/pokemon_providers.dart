@@ -15,7 +15,7 @@ import 'domain/usecases/watch_pokemon.dart';
 // Ensamblaje de la feature pokemon:
 // datasources -> coordinador -> repositorio -> casos de uso.
 // Para una prueba se puede reemplazar cualquier pieza con overrides
-// del ProviderScope (RNF-MAN-03).
+// del ProviderScope.
 
 /// Conducto remoto: el datasource que habla con PokeAPI.
 final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
