@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 ///
 /// - [size] es el lado del cuadrado donde se dibuja; con él se calcula
 ///   `memCacheWidth` para no decodificar un artwork de 475 px en un espacio
-///   de 72 (RNF-REN-04).
+///   de 72.
 /// - Si no hay URL, o no está en caché y no hay red, muestra el respaldo
-///   "Imagen no disponible" (OF-08).
+///   "Imagen no disponible".
 class PokemonImage extends StatelessWidget {
   const PokemonImage({
     super.key,

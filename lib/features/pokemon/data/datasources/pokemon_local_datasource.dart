@@ -44,8 +44,7 @@ class PokemonLocalDataSource {
   }
 
   /// Upsert por pagina: guarda una pagina completa en una transaccion. Si el
-  /// Pokemon ya existe lo actualiza y si no lo crea, sin duplicarlo nunca
-  /// (PS-06, RNF-RES-04).
+  /// Pokemon ya existe lo actualiza y si no lo crea, sin duplicarlo nunca.
   Future<void> upsertPage(List<PokemonWithTypes> page) {
     return _db.transaction(() async {
       // Se borran los tipos viejos para que, si un Pokemon cambio de tipos,

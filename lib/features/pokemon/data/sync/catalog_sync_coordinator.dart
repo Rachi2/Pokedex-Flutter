@@ -51,7 +51,7 @@ class CatalogSyncCoordinator {
   var _disposed = false;
 
   /// Arranque del coordinador: empieza a escuchar la conectividad. Se llama
-  /// una vez al abrir la app, sin await, para que abra de inmediato (OF-03).
+  /// una vez al abrir la app, sin await, para que abra de inmediato.
   void start() {
     unawaited(_start());
   }
@@ -86,7 +86,7 @@ class CatalogSyncCoordinator {
   /// Siguiente pagina a pedido del usuario (scroll o Reintentar).
   ///
   /// Si ya hay una descarga en curso devuelve esa misma en vez de empezar
-  /// otra (RNF-RES-03).
+  /// otra.
   Future<void> syncNextPage() {
     return _running ??= _syncNextPage().whenComplete(() => _running = null);
   }
@@ -99,7 +99,7 @@ class CatalogSyncCoordinator {
   /// Disparador de la actualizacion.
   ///
   /// Al abrir la app con la API disponible y cada vez que vuelve la conexion,
-  /// actualiza el catalogo (OF-12).
+  /// actualiza el catalogo.
   void _onStatusChanged(ServiceStatus status) {
     final cameBack = status.canReachApi && _lastStatus != ServiceStatus.online;
     _lastStatus = status;
@@ -126,13 +126,13 @@ class CatalogSyncCoordinator {
 
   /// Recorrido completo del catalogo.
   ///
-  /// Online-Preferred (P-02): con la API disponible, primero vuelve a
+  /// Online-Preferred: con la API disponible, primero vuelve a
   /// descargar las paginas ya guardadas, para que lo que se ve sea la version
   /// actual de PokeAPI (y si un dato se altero en la base, se sobrescribe),
   /// y despues sigue con las que faltan. Entre paginas espera [pageDelay].
   ///
   /// Durante toda la tanda sync_metadata queda en "syncing", asi el indicador
-  /// no parpadea entre paginas (IND-06). Los errores no se lanzan: quedan
+  /// no parpadea entre paginas. Los errores no se lanzan: quedan
   /// registrados en sync_metadata y se reintenta al volver la conexion.
   Future<void> _runBatch() async {
     try {

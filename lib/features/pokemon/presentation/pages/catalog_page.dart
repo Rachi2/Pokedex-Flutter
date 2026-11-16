@@ -141,7 +141,7 @@ class _CatalogListState extends State<_CatalogList> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 4),
               // Todas las filas miden lo mismo: la lista calcula posiciones sin
-              // medir cada una y solo construye las visibles (RNF-REN-01).
+              // medir cada una y solo construye las visibles.
               itemExtent: PokemonListTile.height,
               // Un elemento extra al final para el pie (cargando, error o fin).
               itemCount: pokemon.length + 1,

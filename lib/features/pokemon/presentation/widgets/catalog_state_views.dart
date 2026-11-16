@@ -169,8 +169,7 @@ class EmptyView extends StatelessWidget {
 }
 
 /// Vista de error: falló la carga y no hay datos que mostrar. Siempre ofrece
-/// Reintentar
-/// (RF-CAT-04).
+/// Reintentar.
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.failure, required this.onRetry});
 

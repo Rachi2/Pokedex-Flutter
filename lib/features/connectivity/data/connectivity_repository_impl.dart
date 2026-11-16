@@ -6,7 +6,7 @@ import 'package:graphql/client.dart';
 import '../domain/entities/service_status.dart';
 import '../domain/repositories/connectivity_repository.dart';
 
-/// Sonda: consulta mínima para saber si PokeAPI responde (IND-02).
+/// Sonda: consulta mínima para saber si PokeAPI responde.
 const _healthCheckQuery = '{ __typename }';
 
 /// Doble chequeo de conectividad: mira la red del dispositivo y, si hay,

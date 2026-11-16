@@ -19,7 +19,7 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
   void initState() {
     super.initState();
     // Encendido de la sincronizacion: sin await, la app abre de inmediato
-    // y el catalogo se descarga en segundo plano (OF-03).
+    // y el catalogo se descarga en segundo plano.
     ref.read(catalogSyncCoordinatorProvider).start();
   }
 
