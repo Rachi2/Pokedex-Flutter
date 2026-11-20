@@ -12,6 +12,7 @@ import 'tables/sync_metadata_table.dart';
 import 'tables/type_tables.dart';
 import 'tables/stat_tables.dart';
 import 'tables/egg_group_tables.dart';
+import 'tables/ability_tables.dart';
 
 import 'sync_metadata_dao.dart';
 
@@ -28,6 +29,8 @@ part 'app_database.g.dart';
     PokemonStatsTable,
     EggGroupsTable,
     PokemonEggGroupsTable,
+    AbilitiesTable,
+    PokemonAbilitiesTable,
   ],
   daos: [SyncMetadataDao],
 )
@@ -53,6 +56,9 @@ class AppDatabase extends _$AppDatabase {
 
         await m.createTable(eggGroupsTable);
         await m.createTable(pokemonEggGroupsTable);
+
+        await m.createTable(abilitiesTable);
+        await m.createTable(pokemonAbilitiesTable);
       }
     },
     beforeOpen: (details) async {
