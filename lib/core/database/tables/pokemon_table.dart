@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 @DataClassName('PokemonRow')
 @TableIndex(name: 'pokemon_name_idx', columns: {#name})
 @TableIndex(name: 'pokemon_dex_number_idx', columns: {#dexNumber})
+@TableIndex(name: 'pokemon_gen_idx', columns: {#generationId})
 class PokemonTable extends Table {
   @override
   String get tableName => 'pokemon';
@@ -15,6 +16,9 @@ class PokemonTable extends Table {
   TextColumn get spriteUrl => text().nullable()();
   TextColumn get artworkUrl => text().nullable()();
   DateTimeColumn get updatedAt => dateTime()();
+  IntColumn get height => integer().nullable()();
+  IntColumn get weight => integer().nullable()();
+  IntColumn get generationId => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
