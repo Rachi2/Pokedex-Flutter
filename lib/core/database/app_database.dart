@@ -59,6 +59,8 @@ class AppDatabase extends _$AppDatabase {
 
         await m.createTable(abilitiesTable);
         await m.createTable(pokemonAbilitiesTable);
+
+        await m.addColumn(pokemonTable, pokemonTable.isDefault);
       }
     },
     beforeOpen: (details) async {

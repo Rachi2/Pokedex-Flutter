@@ -19,6 +19,7 @@ class PokemonTable extends Table {
   IntColumn get height => integer().nullable()();
   IntColumn get weight => integer().nullable()();
   IntColumn get generationId => integer().nullable()();
+  BoolColumn get isDefault => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};

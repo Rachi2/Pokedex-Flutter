@@ -25,6 +25,8 @@ class PokemonMapper {
         spriteUrl: dto.spriteUrl,
         artworkUrl: dto.artworkUrl,
         updatedAt: updatedAt,
+        // Se coloca true fijo porque la consulta del catalogo solo trae formas normales
+        isDefault: true,
       ),
       types: [
         for (final type in dto.types)
