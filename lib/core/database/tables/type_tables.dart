@@ -37,3 +37,22 @@ class PokemonTypesTable extends Table {
     {pokemonId, typeId},
   ];
 }
+
+@DataClassName('TypeEfficacyRow')
+class TypeEfficaciesTable extends Table {
+  @override
+  String get tableName => 'type_efficacies';
+
+  IntColumn get defendingTypeId =>
+      integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get attackingTypeId =>
+      integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get damageFactor =>
+      // ignore: recursive_getters
+      integer().check(damageFactor.isIn([0, 50, 100, 200]))();
+
+  @override
+  Set<Column> get primaryKey => {defendingTypeId, attackingTypeId};
+}

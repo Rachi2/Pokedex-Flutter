@@ -27,6 +27,7 @@ part 'app_database.g.dart';
     PokemonTable,
     TypesTable,
     PokemonTypesTable,
+    TypeEfficaciesTable,
     StatsTable,
     PokemonStatsTable,
     EggGroupsTable,
@@ -74,6 +75,8 @@ class AppDatabase extends _$AppDatabase {
 
         await m.createTable(movesTable);
         await m.createTable(pokemonMovesTable);
+
+        await m.createTable(typeEfficaciesTable);
       }
     },
     beforeOpen: (details) async {
