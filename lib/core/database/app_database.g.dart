@@ -1655,6 +1655,302 @@ class PokemonTypesTableCompanion extends UpdateCompanion<PokemonTypeRow> {
   }
 }
 
+class $TypeEfficaciesTableTable extends TypeEfficaciesTable
+    with TableInfo<$TypeEfficaciesTableTable, TypeEfficacyRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TypeEfficaciesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _defendingTypeIdMeta = const VerificationMeta(
+    'defendingTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> defendingTypeId = GeneratedColumn<int>(
+    'defending_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES types (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _attackingTypeIdMeta = const VerificationMeta(
+    'attackingTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> attackingTypeId = GeneratedColumn<int>(
+    'attacking_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES types (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _damageFactorMeta = const VerificationMeta(
+    'damageFactor',
+  );
+  @override
+  late final GeneratedColumn<int> damageFactor = GeneratedColumn<int>(
+    'damage_factor',
+    aliasedName,
+    false,
+    check: () => damageFactor.isIn([0, 50, 100, 200]),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    defendingTypeId,
+    attackingTypeId,
+    damageFactor,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'type_efficacies';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TypeEfficacyRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('defending_type_id')) {
+      context.handle(
+        _defendingTypeIdMeta,
+        defendingTypeId.isAcceptableOrUnknown(
+          data['defending_type_id']!,
+          _defendingTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_defendingTypeIdMeta);
+    }
+    if (data.containsKey('attacking_type_id')) {
+      context.handle(
+        _attackingTypeIdMeta,
+        attackingTypeId.isAcceptableOrUnknown(
+          data['attacking_type_id']!,
+          _attackingTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_attackingTypeIdMeta);
+    }
+    if (data.containsKey('damage_factor')) {
+      context.handle(
+        _damageFactorMeta,
+        damageFactor.isAcceptableOrUnknown(
+          data['damage_factor']!,
+          _damageFactorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damageFactorMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {defendingTypeId, attackingTypeId};
+  @override
+  TypeEfficacyRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TypeEfficacyRow(
+      defendingTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}defending_type_id'],
+      )!,
+      attackingTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attacking_type_id'],
+      )!,
+      damageFactor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}damage_factor'],
+      )!,
+    );
+  }
+
+  @override
+  $TypeEfficaciesTableTable createAlias(String alias) {
+    return $TypeEfficaciesTableTable(attachedDatabase, alias);
+  }
+}
+
+class TypeEfficacyRow extends DataClass implements Insertable<TypeEfficacyRow> {
+  final int defendingTypeId;
+  final int attackingTypeId;
+  final int damageFactor;
+  const TypeEfficacyRow({
+    required this.defendingTypeId,
+    required this.attackingTypeId,
+    required this.damageFactor,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['defending_type_id'] = Variable<int>(defendingTypeId);
+    map['attacking_type_id'] = Variable<int>(attackingTypeId);
+    map['damage_factor'] = Variable<int>(damageFactor);
+    return map;
+  }
+
+  TypeEfficaciesTableCompanion toCompanion(bool nullToAbsent) {
+    return TypeEfficaciesTableCompanion(
+      defendingTypeId: Value(defendingTypeId),
+      attackingTypeId: Value(attackingTypeId),
+      damageFactor: Value(damageFactor),
+    );
+  }
+
+  factory TypeEfficacyRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TypeEfficacyRow(
+      defendingTypeId: serializer.fromJson<int>(json['defendingTypeId']),
+      attackingTypeId: serializer.fromJson<int>(json['attackingTypeId']),
+      damageFactor: serializer.fromJson<int>(json['damageFactor']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'defendingTypeId': serializer.toJson<int>(defendingTypeId),
+      'attackingTypeId': serializer.toJson<int>(attackingTypeId),
+      'damageFactor': serializer.toJson<int>(damageFactor),
+    };
+  }
+
+  TypeEfficacyRow copyWith({
+    int? defendingTypeId,
+    int? attackingTypeId,
+    int? damageFactor,
+  }) => TypeEfficacyRow(
+    defendingTypeId: defendingTypeId ?? this.defendingTypeId,
+    attackingTypeId: attackingTypeId ?? this.attackingTypeId,
+    damageFactor: damageFactor ?? this.damageFactor,
+  );
+  TypeEfficacyRow copyWithCompanion(TypeEfficaciesTableCompanion data) {
+    return TypeEfficacyRow(
+      defendingTypeId: data.defendingTypeId.present
+          ? data.defendingTypeId.value
+          : this.defendingTypeId,
+      attackingTypeId: data.attackingTypeId.present
+          ? data.attackingTypeId.value
+          : this.attackingTypeId,
+      damageFactor: data.damageFactor.present
+          ? data.damageFactor.value
+          : this.damageFactor,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TypeEfficacyRow(')
+          ..write('defendingTypeId: $defendingTypeId, ')
+          ..write('attackingTypeId: $attackingTypeId, ')
+          ..write('damageFactor: $damageFactor')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(defendingTypeId, attackingTypeId, damageFactor);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TypeEfficacyRow &&
+          other.defendingTypeId == this.defendingTypeId &&
+          other.attackingTypeId == this.attackingTypeId &&
+          other.damageFactor == this.damageFactor);
+}
+
+class TypeEfficaciesTableCompanion extends UpdateCompanion<TypeEfficacyRow> {
+  final Value<int> defendingTypeId;
+  final Value<int> attackingTypeId;
+  final Value<int> damageFactor;
+  final Value<int> rowid;
+  const TypeEfficaciesTableCompanion({
+    this.defendingTypeId = const Value.absent(),
+    this.attackingTypeId = const Value.absent(),
+    this.damageFactor = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TypeEfficaciesTableCompanion.insert({
+    required int defendingTypeId,
+    required int attackingTypeId,
+    required int damageFactor,
+    this.rowid = const Value.absent(),
+  }) : defendingTypeId = Value(defendingTypeId),
+       attackingTypeId = Value(attackingTypeId),
+       damageFactor = Value(damageFactor);
+  static Insertable<TypeEfficacyRow> custom({
+    Expression<int>? defendingTypeId,
+    Expression<int>? attackingTypeId,
+    Expression<int>? damageFactor,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (defendingTypeId != null) 'defending_type_id': defendingTypeId,
+      if (attackingTypeId != null) 'attacking_type_id': attackingTypeId,
+      if (damageFactor != null) 'damage_factor': damageFactor,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TypeEfficaciesTableCompanion copyWith({
+    Value<int>? defendingTypeId,
+    Value<int>? attackingTypeId,
+    Value<int>? damageFactor,
+    Value<int>? rowid,
+  }) {
+    return TypeEfficaciesTableCompanion(
+      defendingTypeId: defendingTypeId ?? this.defendingTypeId,
+      attackingTypeId: attackingTypeId ?? this.attackingTypeId,
+      damageFactor: damageFactor ?? this.damageFactor,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (defendingTypeId.present) {
+      map['defending_type_id'] = Variable<int>(defendingTypeId.value);
+    }
+    if (attackingTypeId.present) {
+      map['attacking_type_id'] = Variable<int>(attackingTypeId.value);
+    }
+    if (damageFactor.present) {
+      map['damage_factor'] = Variable<int>(damageFactor.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TypeEfficaciesTableCompanion(')
+          ..write('defendingTypeId: $defendingTypeId, ')
+          ..write('attackingTypeId: $attackingTypeId, ')
+          ..write('damageFactor: $damageFactor, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $StatsTableTable extends StatsTable
     with TableInfo<$StatsTableTable, StatRow> {
   @override
@@ -4981,6 +5277,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TypesTableTable typesTable = $TypesTableTable(this);
   late final $PokemonTypesTableTable pokemonTypesTable =
       $PokemonTypesTableTable(this);
+  late final $TypeEfficaciesTableTable typeEfficaciesTable =
+      $TypeEfficaciesTableTable(this);
   late final $StatsTableTable statsTable = $StatsTableTable(this);
   late final $PokemonStatsTableTable pokemonStatsTable =
       $PokemonStatsTableTable(this);
@@ -5026,6 +5324,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pokemonTable,
     typesTable,
     pokemonTypesTable,
+    typeEfficaciesTable,
     statsTable,
     pokemonStatsTable,
     eggGroupsTable,
@@ -5056,6 +5355,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('pokemon_types', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'types',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('type_efficacies', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'types',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('type_efficacies', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -6905,6 +7218,395 @@ typedef $$PokemonTypesTableTableProcessedTableManager =
       (PokemonTypeRow, $$PokemonTypesTableTableReferences),
       PokemonTypeRow,
       PrefetchHooks Function({bool pokemonId, bool typeId})
+    >;
+typedef $$TypeEfficaciesTableTableCreateCompanionBuilder =
+    TypeEfficaciesTableCompanion Function({
+      required int defendingTypeId,
+      required int attackingTypeId,
+      required int damageFactor,
+      Value<int> rowid,
+    });
+typedef $$TypeEfficaciesTableTableUpdateCompanionBuilder =
+    TypeEfficaciesTableCompanion Function({
+      Value<int> defendingTypeId,
+      Value<int> attackingTypeId,
+      Value<int> damageFactor,
+      Value<int> rowid,
+    });
+
+final class $$TypeEfficaciesTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TypeEfficaciesTableTable,
+          TypeEfficacyRow
+        > {
+  $$TypeEfficaciesTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TypesTableTable _defendingTypeIdTable(_$AppDatabase db) => db
+      .typesTable
+      .createAlias('type_efficacies__defending_type_id__types__id');
+
+  $$TypesTableTableProcessedTableManager get defendingTypeId {
+    final $_column = $_itemColumn<int>('defending_type_id')!;
+
+    final manager = $$TypesTableTableTableManager(
+      $_db,
+      $_db.typesTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_defendingTypeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TypesTableTable _attackingTypeIdTable(_$AppDatabase db) => db
+      .typesTable
+      .createAlias('type_efficacies__attacking_type_id__types__id');
+
+  $$TypesTableTableProcessedTableManager get attackingTypeId {
+    final $_column = $_itemColumn<int>('attacking_type_id')!;
+
+    final manager = $$TypesTableTableTableManager(
+      $_db,
+      $_db.typesTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_attackingTypeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TypeEfficaciesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TypeEfficaciesTableTable> {
+  $$TypeEfficaciesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get damageFactor => $composableBuilder(
+    column: $table.damageFactor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TypesTableTableFilterComposer get defendingTypeId {
+    final $$TypesTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defendingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableFilterComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TypesTableTableFilterComposer get attackingTypeId {
+    final $$TypesTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attackingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableFilterComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TypeEfficaciesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TypeEfficaciesTableTable> {
+  $$TypeEfficaciesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get damageFactor => $composableBuilder(
+    column: $table.damageFactor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TypesTableTableOrderingComposer get defendingTypeId {
+    final $$TypesTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defendingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TypesTableTableOrderingComposer get attackingTypeId {
+    final $$TypesTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attackingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TypeEfficaciesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TypeEfficaciesTableTable> {
+  $$TypeEfficaciesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get damageFactor => $composableBuilder(
+    column: $table.damageFactor,
+    builder: (column) => column,
+  );
+
+  $$TypesTableTableAnnotationComposer get defendingTypeId {
+    final $$TypesTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defendingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TypesTableTableAnnotationComposer get attackingTypeId {
+    final $$TypesTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attackingTypeId,
+      referencedTable: $db.typesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TypesTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.typesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TypeEfficaciesTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TypeEfficaciesTableTable,
+          TypeEfficacyRow,
+          $$TypeEfficaciesTableTableFilterComposer,
+          $$TypeEfficaciesTableTableOrderingComposer,
+          $$TypeEfficaciesTableTableAnnotationComposer,
+          $$TypeEfficaciesTableTableCreateCompanionBuilder,
+          $$TypeEfficaciesTableTableUpdateCompanionBuilder,
+          (TypeEfficacyRow, $$TypeEfficaciesTableTableReferences),
+          TypeEfficacyRow,
+          PrefetchHooks Function({bool defendingTypeId, bool attackingTypeId})
+        > {
+  $$TypeEfficaciesTableTableTableManager(
+    _$AppDatabase db,
+    $TypeEfficaciesTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TypeEfficaciesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TypeEfficaciesTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TypeEfficaciesTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> defendingTypeId = const Value.absent(),
+                Value<int> attackingTypeId = const Value.absent(),
+                Value<int> damageFactor = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TypeEfficaciesTableCompanion(
+                defendingTypeId: defendingTypeId,
+                attackingTypeId: attackingTypeId,
+                damageFactor: damageFactor,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int defendingTypeId,
+                required int attackingTypeId,
+                required int damageFactor,
+                Value<int> rowid = const Value.absent(),
+              }) => TypeEfficaciesTableCompanion.insert(
+                defendingTypeId: defendingTypeId,
+                attackingTypeId: attackingTypeId,
+                damageFactor: damageFactor,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TypeEfficaciesTableTable, TypeEfficacyRow>(
+                    table,
+                  ),
+                  $$TypeEfficaciesTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({defendingTypeId = false, attackingTypeId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (defendingTypeId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.defendingTypeId,
+                            referencedTable:
+                                $$TypeEfficaciesTableTableReferences
+                                    ._defendingTypeIdTable(db),
+                            referencedColumn:
+                                $$TypeEfficaciesTableTableReferences
+                                    ._defendingTypeIdTable(db)
+                                    .id,
+                          ) as T;
+                        }
+                        if (attackingTypeId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.attackingTypeId,
+                            referencedTable:
+                                $$TypeEfficaciesTableTableReferences
+                                    ._attackingTypeIdTable(db),
+                            referencedColumn:
+                                $$TypeEfficaciesTableTableReferences
+                                    ._attackingTypeIdTable(db)
+                                    .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TypeEfficaciesTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TypeEfficaciesTableTable,
+      TypeEfficacyRow,
+      $$TypeEfficaciesTableTableFilterComposer,
+      $$TypeEfficaciesTableTableOrderingComposer,
+      $$TypeEfficaciesTableTableAnnotationComposer,
+      $$TypeEfficaciesTableTableCreateCompanionBuilder,
+      $$TypeEfficaciesTableTableUpdateCompanionBuilder,
+      (TypeEfficacyRow, $$TypeEfficaciesTableTableReferences),
+      TypeEfficacyRow,
+      PrefetchHooks Function({bool defendingTypeId, bool attackingTypeId})
     >;
 typedef $$StatsTableTableCreateCompanionBuilder = StatsTableCompanion Function({
   Value<int> id,
@@ -10367,6 +11069,8 @@ class $AppDatabaseManager {
       $$TypesTableTableTableManager(_db, _db.typesTable);
   $$PokemonTypesTableTableTableManager get pokemonTypesTable =>
       $$PokemonTypesTableTableTableManager(_db, _db.pokemonTypesTable);
+  $$TypeEfficaciesTableTableTableManager get typeEfficaciesTable =>
+      $$TypeEfficaciesTableTableTableManager(_db, _db.typeEfficaciesTable);
   $$StatsTableTableTableManager get statsTable =>
       $$StatsTableTableTableManager(_db, _db.statsTable);
   $$PokemonStatsTableTableTableManager get pokemonStatsTable =>
