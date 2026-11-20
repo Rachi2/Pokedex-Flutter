@@ -3291,6 +3291,829 @@ class PokemonAbilitiesTableCompanion
   }
 }
 
+class $EvolutionSpeciesTableTable extends EvolutionSpeciesTable
+    with TableInfo<$EvolutionSpeciesTableTable, EvolutionSpeciesRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EvolutionSpeciesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _speciesIdMeta = const VerificationMeta(
+    'speciesId',
+  );
+  @override
+  late final GeneratedColumn<int> speciesId = GeneratedColumn<int>(
+    'species_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _chainIdMeta = const VerificationMeta(
+    'chainId',
+  );
+  @override
+  late final GeneratedColumn<int> chainId = GeneratedColumn<int>(
+    'chain_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _evolvesFromIdMeta = const VerificationMeta(
+    'evolvesFromId',
+  );
+  @override
+  late final GeneratedColumn<int> evolvesFromId = GeneratedColumn<int>(
+    'evolves_from_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    speciesId,
+    chainId,
+    evolvesFromId,
+    name,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'evolution_species';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EvolutionSpeciesRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('species_id')) {
+      context.handle(
+        _speciesIdMeta,
+        speciesId.isAcceptableOrUnknown(data['species_id']!, _speciesIdMeta),
+      );
+    }
+    if (data.containsKey('chain_id')) {
+      context.handle(
+        _chainIdMeta,
+        chainId.isAcceptableOrUnknown(data['chain_id']!, _chainIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_chainIdMeta);
+    }
+    if (data.containsKey('evolves_from_id')) {
+      context.handle(
+        _evolvesFromIdMeta,
+        evolvesFromId.isAcceptableOrUnknown(
+          data['evolves_from_id']!,
+          _evolvesFromIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {speciesId};
+  @override
+  EvolutionSpeciesRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EvolutionSpeciesRow(
+      speciesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}species_id'],
+      )!,
+      chainId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}chain_id'],
+      )!,
+      evolvesFromId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}evolves_from_id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $EvolutionSpeciesTableTable createAlias(String alias) {
+    return $EvolutionSpeciesTableTable(attachedDatabase, alias);
+  }
+}
+
+class EvolutionSpeciesRow extends DataClass
+    implements Insertable<EvolutionSpeciesRow> {
+  final int speciesId;
+  final int chainId;
+  final int? evolvesFromId;
+  final String name;
+  const EvolutionSpeciesRow({
+    required this.speciesId,
+    required this.chainId,
+    this.evolvesFromId,
+    required this.name,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['species_id'] = Variable<int>(speciesId);
+    map['chain_id'] = Variable<int>(chainId);
+    if (!nullToAbsent || evolvesFromId != null) {
+      map['evolves_from_id'] = Variable<int>(evolvesFromId);
+    }
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  EvolutionSpeciesTableCompanion toCompanion(bool nullToAbsent) {
+    return EvolutionSpeciesTableCompanion(
+      speciesId: Value(speciesId),
+      chainId: Value(chainId),
+      evolvesFromId: evolvesFromId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evolvesFromId),
+      name: Value(name),
+    );
+  }
+
+  factory EvolutionSpeciesRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EvolutionSpeciesRow(
+      speciesId: serializer.fromJson<int>(json['speciesId']),
+      chainId: serializer.fromJson<int>(json['chainId']),
+      evolvesFromId: serializer.fromJson<int?>(json['evolvesFromId']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'speciesId': serializer.toJson<int>(speciesId),
+      'chainId': serializer.toJson<int>(chainId),
+      'evolvesFromId': serializer.toJson<int?>(evolvesFromId),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  EvolutionSpeciesRow copyWith({
+    int? speciesId,
+    int? chainId,
+    Value<int?> evolvesFromId = const Value.absent(),
+    String? name,
+  }) => EvolutionSpeciesRow(
+    speciesId: speciesId ?? this.speciesId,
+    chainId: chainId ?? this.chainId,
+    evolvesFromId: evolvesFromId.present
+        ? evolvesFromId.value
+        : this.evolvesFromId,
+    name: name ?? this.name,
+  );
+  EvolutionSpeciesRow copyWithCompanion(EvolutionSpeciesTableCompanion data) {
+    return EvolutionSpeciesRow(
+      speciesId: data.speciesId.present ? data.speciesId.value : this.speciesId,
+      chainId: data.chainId.present ? data.chainId.value : this.chainId,
+      evolvesFromId: data.evolvesFromId.present
+          ? data.evolvesFromId.value
+          : this.evolvesFromId,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EvolutionSpeciesRow(')
+          ..write('speciesId: $speciesId, ')
+          ..write('chainId: $chainId, ')
+          ..write('evolvesFromId: $evolvesFromId, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(speciesId, chainId, evolvesFromId, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EvolutionSpeciesRow &&
+          other.speciesId == this.speciesId &&
+          other.chainId == this.chainId &&
+          other.evolvesFromId == this.evolvesFromId &&
+          other.name == this.name);
+}
+
+class EvolutionSpeciesTableCompanion
+    extends UpdateCompanion<EvolutionSpeciesRow> {
+  final Value<int> speciesId;
+  final Value<int> chainId;
+  final Value<int?> evolvesFromId;
+  final Value<String> name;
+  const EvolutionSpeciesTableCompanion({
+    this.speciesId = const Value.absent(),
+    this.chainId = const Value.absent(),
+    this.evolvesFromId = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  EvolutionSpeciesTableCompanion.insert({
+    this.speciesId = const Value.absent(),
+    required int chainId,
+    this.evolvesFromId = const Value.absent(),
+    required String name,
+  }) : chainId = Value(chainId),
+       name = Value(name);
+  static Insertable<EvolutionSpeciesRow> custom({
+    Expression<int>? speciesId,
+    Expression<int>? chainId,
+    Expression<int>? evolvesFromId,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (speciesId != null) 'species_id': speciesId,
+      if (chainId != null) 'chain_id': chainId,
+      if (evolvesFromId != null) 'evolves_from_id': evolvesFromId,
+      if (name != null) 'name': name,
+    });
+  }
+
+  EvolutionSpeciesTableCompanion copyWith({
+    Value<int>? speciesId,
+    Value<int>? chainId,
+    Value<int?>? evolvesFromId,
+    Value<String>? name,
+  }) {
+    return EvolutionSpeciesTableCompanion(
+      speciesId: speciesId ?? this.speciesId,
+      chainId: chainId ?? this.chainId,
+      evolvesFromId: evolvesFromId ?? this.evolvesFromId,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (speciesId.present) {
+      map['species_id'] = Variable<int>(speciesId.value);
+    }
+    if (chainId.present) {
+      map['chain_id'] = Variable<int>(chainId.value);
+    }
+    if (evolvesFromId.present) {
+      map['evolves_from_id'] = Variable<int>(evolvesFromId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EvolutionSpeciesTableCompanion(')
+          ..write('speciesId: $speciesId, ')
+          ..write('chainId: $chainId, ')
+          ..write('evolvesFromId: $evolvesFromId, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EvolutionMethodsTableTable extends EvolutionMethodsTable
+    with TableInfo<$EvolutionMethodsTableTable, EvolutionMethodRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EvolutionMethodsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _speciesIdMeta = const VerificationMeta(
+    'speciesId',
+  );
+  @override
+  late final GeneratedColumn<int> speciesId = GeneratedColumn<int>(
+    'species_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES evolution_species (species_id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _triggerMeta = const VerificationMeta(
+    'trigger',
+  );
+  @override
+  late final GeneratedColumn<String> trigger = GeneratedColumn<String>(
+    'trigger',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _minLevelMeta = const VerificationMeta(
+    'minLevel',
+  );
+  @override
+  late final GeneratedColumn<int> minLevel = GeneratedColumn<int>(
+    'min_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _itemMeta = const VerificationMeta('item');
+  @override
+  late final GeneratedColumn<String> item = GeneratedColumn<String>(
+    'item',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _heldItemMeta = const VerificationMeta(
+    'heldItem',
+  );
+  @override
+  late final GeneratedColumn<String> heldItem = GeneratedColumn<String>(
+    'held_item',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _minHappinessMeta = const VerificationMeta(
+    'minHappiness',
+  );
+  @override
+  late final GeneratedColumn<int> minHappiness = GeneratedColumn<int>(
+    'min_happiness',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _timeOfDayMeta = const VerificationMeta(
+    'timeOfDay',
+  );
+  @override
+  late final GeneratedColumn<String> timeOfDay = GeneratedColumn<String>(
+    'time_of_day',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    speciesId,
+    trigger,
+    minLevel,
+    item,
+    heldItem,
+    minHappiness,
+    timeOfDay,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'evolution_methods';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EvolutionMethodRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('species_id')) {
+      context.handle(
+        _speciesIdMeta,
+        speciesId.isAcceptableOrUnknown(data['species_id']!, _speciesIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_speciesIdMeta);
+    }
+    if (data.containsKey('trigger')) {
+      context.handle(
+        _triggerMeta,
+        trigger.isAcceptableOrUnknown(data['trigger']!, _triggerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_triggerMeta);
+    }
+    if (data.containsKey('min_level')) {
+      context.handle(
+        _minLevelMeta,
+        minLevel.isAcceptableOrUnknown(data['min_level']!, _minLevelMeta),
+      );
+    }
+    if (data.containsKey('item')) {
+      context.handle(
+        _itemMeta,
+        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
+      );
+    }
+    if (data.containsKey('held_item')) {
+      context.handle(
+        _heldItemMeta,
+        heldItem.isAcceptableOrUnknown(data['held_item']!, _heldItemMeta),
+      );
+    }
+    if (data.containsKey('min_happiness')) {
+      context.handle(
+        _minHappinessMeta,
+        minHappiness.isAcceptableOrUnknown(
+          data['min_happiness']!,
+          _minHappinessMeta,
+        ),
+      );
+    }
+    if (data.containsKey('time_of_day')) {
+      context.handle(
+        _timeOfDayMeta,
+        timeOfDay.isAcceptableOrUnknown(data['time_of_day']!, _timeOfDayMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EvolutionMethodRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EvolutionMethodRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      speciesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}species_id'],
+      )!,
+      trigger: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trigger'],
+      )!,
+      minLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}min_level'],
+      ),
+      item: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item'],
+      ),
+      heldItem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}held_item'],
+      ),
+      minHappiness: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}min_happiness'],
+      ),
+      timeOfDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_of_day'],
+      ),
+    );
+  }
+
+  @override
+  $EvolutionMethodsTableTable createAlias(String alias) {
+    return $EvolutionMethodsTableTable(attachedDatabase, alias);
+  }
+}
+
+class EvolutionMethodRow extends DataClass
+    implements Insertable<EvolutionMethodRow> {
+  final int id;
+  final int speciesId;
+  final String trigger;
+  final int? minLevel;
+  final String? item;
+  final String? heldItem;
+  final int? minHappiness;
+  final String? timeOfDay;
+  const EvolutionMethodRow({
+    required this.id,
+    required this.speciesId,
+    required this.trigger,
+    this.minLevel,
+    this.item,
+    this.heldItem,
+    this.minHappiness,
+    this.timeOfDay,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['species_id'] = Variable<int>(speciesId);
+    map['trigger'] = Variable<String>(trigger);
+    if (!nullToAbsent || minLevel != null) {
+      map['min_level'] = Variable<int>(minLevel);
+    }
+    if (!nullToAbsent || item != null) {
+      map['item'] = Variable<String>(item);
+    }
+    if (!nullToAbsent || heldItem != null) {
+      map['held_item'] = Variable<String>(heldItem);
+    }
+    if (!nullToAbsent || minHappiness != null) {
+      map['min_happiness'] = Variable<int>(minHappiness);
+    }
+    if (!nullToAbsent || timeOfDay != null) {
+      map['time_of_day'] = Variable<String>(timeOfDay);
+    }
+    return map;
+  }
+
+  EvolutionMethodsTableCompanion toCompanion(bool nullToAbsent) {
+    return EvolutionMethodsTableCompanion(
+      id: Value(id),
+      speciesId: Value(speciesId),
+      trigger: Value(trigger),
+      minLevel: minLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minLevel),
+      item: item == null && nullToAbsent ? const Value.absent() : Value(item),
+      heldItem: heldItem == null && nullToAbsent
+          ? const Value.absent()
+          : Value(heldItem),
+      minHappiness: minHappiness == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minHappiness),
+      timeOfDay: timeOfDay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(timeOfDay),
+    );
+  }
+
+  factory EvolutionMethodRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EvolutionMethodRow(
+      id: serializer.fromJson<int>(json['id']),
+      speciesId: serializer.fromJson<int>(json['speciesId']),
+      trigger: serializer.fromJson<String>(json['trigger']),
+      minLevel: serializer.fromJson<int?>(json['minLevel']),
+      item: serializer.fromJson<String?>(json['item']),
+      heldItem: serializer.fromJson<String?>(json['heldItem']),
+      minHappiness: serializer.fromJson<int?>(json['minHappiness']),
+      timeOfDay: serializer.fromJson<String?>(json['timeOfDay']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'speciesId': serializer.toJson<int>(speciesId),
+      'trigger': serializer.toJson<String>(trigger),
+      'minLevel': serializer.toJson<int?>(minLevel),
+      'item': serializer.toJson<String?>(item),
+      'heldItem': serializer.toJson<String?>(heldItem),
+      'minHappiness': serializer.toJson<int?>(minHappiness),
+      'timeOfDay': serializer.toJson<String?>(timeOfDay),
+    };
+  }
+
+  EvolutionMethodRow copyWith({
+    int? id,
+    int? speciesId,
+    String? trigger,
+    Value<int?> minLevel = const Value.absent(),
+    Value<String?> item = const Value.absent(),
+    Value<String?> heldItem = const Value.absent(),
+    Value<int?> minHappiness = const Value.absent(),
+    Value<String?> timeOfDay = const Value.absent(),
+  }) => EvolutionMethodRow(
+    id: id ?? this.id,
+    speciesId: speciesId ?? this.speciesId,
+    trigger: trigger ?? this.trigger,
+    minLevel: minLevel.present ? minLevel.value : this.minLevel,
+    item: item.present ? item.value : this.item,
+    heldItem: heldItem.present ? heldItem.value : this.heldItem,
+    minHappiness: minHappiness.present ? minHappiness.value : this.minHappiness,
+    timeOfDay: timeOfDay.present ? timeOfDay.value : this.timeOfDay,
+  );
+  EvolutionMethodRow copyWithCompanion(EvolutionMethodsTableCompanion data) {
+    return EvolutionMethodRow(
+      id: data.id.present ? data.id.value : this.id,
+      speciesId: data.speciesId.present ? data.speciesId.value : this.speciesId,
+      trigger: data.trigger.present ? data.trigger.value : this.trigger,
+      minLevel: data.minLevel.present ? data.minLevel.value : this.minLevel,
+      item: data.item.present ? data.item.value : this.item,
+      heldItem: data.heldItem.present ? data.heldItem.value : this.heldItem,
+      minHappiness: data.minHappiness.present
+          ? data.minHappiness.value
+          : this.minHappiness,
+      timeOfDay: data.timeOfDay.present ? data.timeOfDay.value : this.timeOfDay,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EvolutionMethodRow(')
+          ..write('id: $id, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('trigger: $trigger, ')
+          ..write('minLevel: $minLevel, ')
+          ..write('item: $item, ')
+          ..write('heldItem: $heldItem, ')
+          ..write('minHappiness: $minHappiness, ')
+          ..write('timeOfDay: $timeOfDay')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    speciesId,
+    trigger,
+    minLevel,
+    item,
+    heldItem,
+    minHappiness,
+    timeOfDay,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EvolutionMethodRow &&
+          other.id == this.id &&
+          other.speciesId == this.speciesId &&
+          other.trigger == this.trigger &&
+          other.minLevel == this.minLevel &&
+          other.item == this.item &&
+          other.heldItem == this.heldItem &&
+          other.minHappiness == this.minHappiness &&
+          other.timeOfDay == this.timeOfDay);
+}
+
+class EvolutionMethodsTableCompanion
+    extends UpdateCompanion<EvolutionMethodRow> {
+  final Value<int> id;
+  final Value<int> speciesId;
+  final Value<String> trigger;
+  final Value<int?> minLevel;
+  final Value<String?> item;
+  final Value<String?> heldItem;
+  final Value<int?> minHappiness;
+  final Value<String?> timeOfDay;
+  const EvolutionMethodsTableCompanion({
+    this.id = const Value.absent(),
+    this.speciesId = const Value.absent(),
+    this.trigger = const Value.absent(),
+    this.minLevel = const Value.absent(),
+    this.item = const Value.absent(),
+    this.heldItem = const Value.absent(),
+    this.minHappiness = const Value.absent(),
+    this.timeOfDay = const Value.absent(),
+  });
+  EvolutionMethodsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required int speciesId,
+    required String trigger,
+    this.minLevel = const Value.absent(),
+    this.item = const Value.absent(),
+    this.heldItem = const Value.absent(),
+    this.minHappiness = const Value.absent(),
+    this.timeOfDay = const Value.absent(),
+  }) : speciesId = Value(speciesId),
+       trigger = Value(trigger);
+  static Insertable<EvolutionMethodRow> custom({
+    Expression<int>? id,
+    Expression<int>? speciesId,
+    Expression<String>? trigger,
+    Expression<int>? minLevel,
+    Expression<String>? item,
+    Expression<String>? heldItem,
+    Expression<int>? minHappiness,
+    Expression<String>? timeOfDay,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (speciesId != null) 'species_id': speciesId,
+      if (trigger != null) 'trigger': trigger,
+      if (minLevel != null) 'min_level': minLevel,
+      if (item != null) 'item': item,
+      if (heldItem != null) 'held_item': heldItem,
+      if (minHappiness != null) 'min_happiness': minHappiness,
+      if (timeOfDay != null) 'time_of_day': timeOfDay,
+    });
+  }
+
+  EvolutionMethodsTableCompanion copyWith({
+    Value<int>? id,
+    Value<int>? speciesId,
+    Value<String>? trigger,
+    Value<int?>? minLevel,
+    Value<String?>? item,
+    Value<String?>? heldItem,
+    Value<int?>? minHappiness,
+    Value<String?>? timeOfDay,
+  }) {
+    return EvolutionMethodsTableCompanion(
+      id: id ?? this.id,
+      speciesId: speciesId ?? this.speciesId,
+      trigger: trigger ?? this.trigger,
+      minLevel: minLevel ?? this.minLevel,
+      item: item ?? this.item,
+      heldItem: heldItem ?? this.heldItem,
+      minHappiness: minHappiness ?? this.minHappiness,
+      timeOfDay: timeOfDay ?? this.timeOfDay,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (speciesId.present) {
+      map['species_id'] = Variable<int>(speciesId.value);
+    }
+    if (trigger.present) {
+      map['trigger'] = Variable<String>(trigger.value);
+    }
+    if (minLevel.present) {
+      map['min_level'] = Variable<int>(minLevel.value);
+    }
+    if (item.present) {
+      map['item'] = Variable<String>(item.value);
+    }
+    if (heldItem.present) {
+      map['held_item'] = Variable<String>(heldItem.value);
+    }
+    if (minHappiness.present) {
+      map['min_happiness'] = Variable<int>(minHappiness.value);
+    }
+    if (timeOfDay.present) {
+      map['time_of_day'] = Variable<String>(timeOfDay.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EvolutionMethodsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('trigger: $trigger, ')
+          ..write('minLevel: $minLevel, ')
+          ..write('item: $item, ')
+          ..write('heldItem: $heldItem, ')
+          ..write('minHappiness: $minHappiness, ')
+          ..write('timeOfDay: $timeOfDay')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3310,6 +4133,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AbilitiesTableTable abilitiesTable = $AbilitiesTableTable(this);
   late final $PokemonAbilitiesTableTable pokemonAbilitiesTable =
       $PokemonAbilitiesTableTable(this);
+  late final $EvolutionSpeciesTableTable evolutionSpeciesTable =
+      $EvolutionSpeciesTableTable(this);
+  late final $EvolutionMethodsTableTable evolutionMethodsTable =
+      $EvolutionMethodsTableTable(this);
   late final Index pokemonNameIdx = Index(
     'pokemon_name_idx',
     'CREATE INDEX pokemon_name_idx ON pokemon (name)',
@@ -3321,6 +4148,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index pokemonGenIdx = Index(
     'pokemon_gen_idx',
     'CREATE INDEX pokemon_gen_idx ON pokemon (generation_id)',
+  );
+  late final Index evolutionSpeciesChainIdx = Index(
+    'evolution_species_chain_idx',
+    'CREATE INDEX evolution_species_chain_idx ON evolution_species (chain_id)',
   );
   late final SyncMetadataDao syncMetadataDao = SyncMetadataDao(
     this as AppDatabase,
@@ -3341,9 +4172,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pokemonEggGroupsTable,
     abilitiesTable,
     pokemonAbilitiesTable,
+    evolutionSpeciesTable,
+    evolutionMethodsTable,
     pokemonNameIdx,
     pokemonDexNumberIdx,
     pokemonGenIdx,
+    evolutionSpeciesChainIdx,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3402,6 +4236,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('pokemon_abilities', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'evolution_species',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('evolution_methods', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -7060,6 +7901,718 @@ typedef $$PokemonAbilitiesTableTableProcessedTableManager =
       PokemonAbilityRow,
       PrefetchHooks Function({bool pokemonId, bool abilityId})
     >;
+typedef $$EvolutionSpeciesTableTableCreateCompanionBuilder =
+    EvolutionSpeciesTableCompanion Function({
+      Value<int> speciesId,
+      required int chainId,
+      Value<int?> evolvesFromId,
+      required String name,
+    });
+typedef $$EvolutionSpeciesTableTableUpdateCompanionBuilder =
+    EvolutionSpeciesTableCompanion Function({
+      Value<int> speciesId,
+      Value<int> chainId,
+      Value<int?> evolvesFromId,
+      Value<String> name,
+    });
+
+final class $$EvolutionSpeciesTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $EvolutionSpeciesTableTable,
+          EvolutionSpeciesRow
+        > {
+  $$EvolutionSpeciesTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $EvolutionMethodsTableTable,
+    List<EvolutionMethodRow>
+  >
+  _evolutionMethodsTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.evolutionMethodsTable,
+        aliasName:
+            'evolution_species__species_id__evolution_methods__species_id',
+      );
+
+  $$EvolutionMethodsTableTableProcessedTableManager
+  get evolutionMethodsTableRefs {
+    final manager =
+        $$EvolutionMethodsTableTableTableManager(
+          $_db,
+          $_db.evolutionMethodsTable,
+        ).filter(
+          (f) =>
+              f.speciesId.speciesId.sqlEquals($_itemColumn<int>('species_id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _evolutionMethodsTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$EvolutionSpeciesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $EvolutionSpeciesTableTable> {
+  $$EvolutionSpeciesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get chainId => $composableBuilder(
+    column: $table.chainId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get evolvesFromId => $composableBuilder(
+    column: $table.evolvesFromId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> evolutionMethodsTableRefs(
+    Expression<bool> Function($$EvolutionMethodsTableTableFilterComposer f) f,
+  ) {
+    final $$EvolutionMethodsTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.speciesId,
+          referencedTable: $db.evolutionMethodsTable,
+          getReferencedColumn: (t) => t.speciesId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EvolutionMethodsTableTableFilterComposer(
+                $db: $db,
+                $table: $db.evolutionMethodsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$EvolutionSpeciesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $EvolutionSpeciesTableTable> {
+  $$EvolutionSpeciesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get chainId => $composableBuilder(
+    column: $table.chainId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get evolvesFromId => $composableBuilder(
+    column: $table.evolvesFromId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$EvolutionSpeciesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EvolutionSpeciesTableTable> {
+  $$EvolutionSpeciesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get speciesId =>
+      $composableBuilder(column: $table.speciesId, builder: (column) => column);
+
+  GeneratedColumn<int> get chainId =>
+      $composableBuilder(column: $table.chainId, builder: (column) => column);
+
+  GeneratedColumn<int> get evolvesFromId => $composableBuilder(
+    column: $table.evolvesFromId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> evolutionMethodsTableRefs<T extends Object>(
+    Expression<T> Function($$EvolutionMethodsTableTableAnnotationComposer a) f,
+  ) {
+    final $$EvolutionMethodsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.speciesId,
+          referencedTable: $db.evolutionMethodsTable,
+          getReferencedColumn: (t) => t.speciesId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EvolutionMethodsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.evolutionMethodsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$EvolutionSpeciesTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EvolutionSpeciesTableTable,
+          EvolutionSpeciesRow,
+          $$EvolutionSpeciesTableTableFilterComposer,
+          $$EvolutionSpeciesTableTableOrderingComposer,
+          $$EvolutionSpeciesTableTableAnnotationComposer,
+          $$EvolutionSpeciesTableTableCreateCompanionBuilder,
+          $$EvolutionSpeciesTableTableUpdateCompanionBuilder,
+          (EvolutionSpeciesRow, $$EvolutionSpeciesTableTableReferences),
+          EvolutionSpeciesRow,
+          PrefetchHooks Function({bool evolutionMethodsTableRefs})
+        > {
+  $$EvolutionSpeciesTableTableTableManager(
+    _$AppDatabase db,
+    $EvolutionSpeciesTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EvolutionSpeciesTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$EvolutionSpeciesTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$EvolutionSpeciesTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> speciesId = const Value.absent(),
+                Value<int> chainId = const Value.absent(),
+                Value<int?> evolvesFromId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) => EvolutionSpeciesTableCompanion(
+                speciesId: speciesId,
+                chainId: chainId,
+                evolvesFromId: evolvesFromId,
+                name: name,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> speciesId = const Value.absent(),
+                required int chainId,
+                Value<int?> evolvesFromId = const Value.absent(),
+                required String name,
+              }) => EvolutionSpeciesTableCompanion.insert(
+                speciesId: speciesId,
+                chainId: chainId,
+                evolvesFromId: evolvesFromId,
+                name: name,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EvolutionSpeciesTableTable, EvolutionSpeciesRow>(
+                    table,
+                  ),
+                  $$EvolutionSpeciesTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({evolutionMethodsTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (evolutionMethodsTableRefs) db.evolutionMethodsTable,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (evolutionMethodsTableRefs)
+                    await $_getPrefetchedDataByColumns<
+                      EvolutionSpeciesRow,
+                      $EvolutionSpeciesTableTable,
+                      EvolutionMethodRow,
+                      $EvolutionMethodsTableTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$EvolutionSpeciesTableTableReferences
+                          ._evolutionMethodsTableRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$EvolutionSpeciesTableTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).evolutionMethodsTableRefs,
+                      currentColumn: 'species_id',
+                      referencedColumn: 'species_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EvolutionSpeciesTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EvolutionSpeciesTableTable,
+      EvolutionSpeciesRow,
+      $$EvolutionSpeciesTableTableFilterComposer,
+      $$EvolutionSpeciesTableTableOrderingComposer,
+      $$EvolutionSpeciesTableTableAnnotationComposer,
+      $$EvolutionSpeciesTableTableCreateCompanionBuilder,
+      $$EvolutionSpeciesTableTableUpdateCompanionBuilder,
+      (EvolutionSpeciesRow, $$EvolutionSpeciesTableTableReferences),
+      EvolutionSpeciesRow,
+      PrefetchHooks Function({bool evolutionMethodsTableRefs})
+    >;
+typedef $$EvolutionMethodsTableTableCreateCompanionBuilder =
+    EvolutionMethodsTableCompanion Function({
+      Value<int> id,
+      required int speciesId,
+      required String trigger,
+      Value<int?> minLevel,
+      Value<String?> item,
+      Value<String?> heldItem,
+      Value<int?> minHappiness,
+      Value<String?> timeOfDay,
+    });
+typedef $$EvolutionMethodsTableTableUpdateCompanionBuilder =
+    EvolutionMethodsTableCompanion Function({
+      Value<int> id,
+      Value<int> speciesId,
+      Value<String> trigger,
+      Value<int?> minLevel,
+      Value<String?> item,
+      Value<String?> heldItem,
+      Value<int?> minHappiness,
+      Value<String?> timeOfDay,
+    });
+
+final class $$EvolutionMethodsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $EvolutionMethodsTableTable,
+          EvolutionMethodRow
+        > {
+  $$EvolutionMethodsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $EvolutionSpeciesTableTable _speciesIdTable(_$AppDatabase db) =>
+      db.evolutionSpeciesTable.createAlias(
+        'evolution_methods__species_id__evolution_species__species_id',
+      );
+
+  $$EvolutionSpeciesTableTableProcessedTableManager get speciesId {
+    final $_column = $_itemColumn<int>('species_id')!;
+
+    final manager = $$EvolutionSpeciesTableTableTableManager(
+      $_db,
+      $_db.evolutionSpeciesTable,
+    ).filter((f) => f.speciesId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_speciesIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$EvolutionMethodsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $EvolutionMethodsTableTable> {
+  $$EvolutionMethodsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trigger => $composableBuilder(
+    column: $table.trigger,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minLevel => $composableBuilder(
+    column: $table.minLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get item => $composableBuilder(
+    column: $table.item,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get heldItem => $composableBuilder(
+    column: $table.heldItem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minHappiness => $composableBuilder(
+    column: $table.minHappiness,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timeOfDay => $composableBuilder(
+    column: $table.timeOfDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$EvolutionSpeciesTableTableFilterComposer get speciesId {
+    final $$EvolutionSpeciesTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.speciesId,
+          referencedTable: $db.evolutionSpeciesTable,
+          getReferencedColumn: (t) => t.speciesId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EvolutionSpeciesTableTableFilterComposer(
+                $db: $db,
+                $table: $db.evolutionSpeciesTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$EvolutionMethodsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $EvolutionMethodsTableTable> {
+  $$EvolutionMethodsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trigger => $composableBuilder(
+    column: $table.trigger,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minLevel => $composableBuilder(
+    column: $table.minLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get item => $composableBuilder(
+    column: $table.item,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get heldItem => $composableBuilder(
+    column: $table.heldItem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minHappiness => $composableBuilder(
+    column: $table.minHappiness,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timeOfDay => $composableBuilder(
+    column: $table.timeOfDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$EvolutionSpeciesTableTableOrderingComposer get speciesId {
+    final $$EvolutionSpeciesTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.speciesId,
+          referencedTable: $db.evolutionSpeciesTable,
+          getReferencedColumn: (t) => t.speciesId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EvolutionSpeciesTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.evolutionSpeciesTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$EvolutionMethodsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EvolutionMethodsTableTable> {
+  $$EvolutionMethodsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get trigger =>
+      $composableBuilder(column: $table.trigger, builder: (column) => column);
+
+  GeneratedColumn<int> get minLevel =>
+      $composableBuilder(column: $table.minLevel, builder: (column) => column);
+
+  GeneratedColumn<String> get item =>
+      $composableBuilder(column: $table.item, builder: (column) => column);
+
+  GeneratedColumn<String> get heldItem =>
+      $composableBuilder(column: $table.heldItem, builder: (column) => column);
+
+  GeneratedColumn<int> get minHappiness => $composableBuilder(
+    column: $table.minHappiness,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get timeOfDay =>
+      $composableBuilder(column: $table.timeOfDay, builder: (column) => column);
+
+  $$EvolutionSpeciesTableTableAnnotationComposer get speciesId {
+    final $$EvolutionSpeciesTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.speciesId,
+          referencedTable: $db.evolutionSpeciesTable,
+          getReferencedColumn: (t) => t.speciesId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$EvolutionSpeciesTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.evolutionSpeciesTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$EvolutionMethodsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EvolutionMethodsTableTable,
+          EvolutionMethodRow,
+          $$EvolutionMethodsTableTableFilterComposer,
+          $$EvolutionMethodsTableTableOrderingComposer,
+          $$EvolutionMethodsTableTableAnnotationComposer,
+          $$EvolutionMethodsTableTableCreateCompanionBuilder,
+          $$EvolutionMethodsTableTableUpdateCompanionBuilder,
+          (EvolutionMethodRow, $$EvolutionMethodsTableTableReferences),
+          EvolutionMethodRow,
+          PrefetchHooks Function({bool speciesId})
+        > {
+  $$EvolutionMethodsTableTableTableManager(
+    _$AppDatabase db,
+    $EvolutionMethodsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EvolutionMethodsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$EvolutionMethodsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$EvolutionMethodsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> speciesId = const Value.absent(),
+                Value<String> trigger = const Value.absent(),
+                Value<int?> minLevel = const Value.absent(),
+                Value<String?> item = const Value.absent(),
+                Value<String?> heldItem = const Value.absent(),
+                Value<int?> minHappiness = const Value.absent(),
+                Value<String?> timeOfDay = const Value.absent(),
+              }) => EvolutionMethodsTableCompanion(
+                id: id,
+                speciesId: speciesId,
+                trigger: trigger,
+                minLevel: minLevel,
+                item: item,
+                heldItem: heldItem,
+                minHappiness: minHappiness,
+                timeOfDay: timeOfDay,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int speciesId,
+                required String trigger,
+                Value<int?> minLevel = const Value.absent(),
+                Value<String?> item = const Value.absent(),
+                Value<String?> heldItem = const Value.absent(),
+                Value<int?> minHappiness = const Value.absent(),
+                Value<String?> timeOfDay = const Value.absent(),
+              }) => EvolutionMethodsTableCompanion.insert(
+                id: id,
+                speciesId: speciesId,
+                trigger: trigger,
+                minLevel: minLevel,
+                item: item,
+                heldItem: heldItem,
+                minHappiness: minHappiness,
+                timeOfDay: timeOfDay,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EvolutionMethodsTableTable, EvolutionMethodRow>(
+                    table,
+                  ),
+                  $$EvolutionMethodsTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({speciesId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (speciesId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.speciesId,
+                        referencedTable: $$EvolutionMethodsTableTableReferences
+                            ._speciesIdTable(db),
+                        referencedColumn: $$EvolutionMethodsTableTableReferences
+                            ._speciesIdTable(db)
+                            .speciesId,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EvolutionMethodsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EvolutionMethodsTableTable,
+      EvolutionMethodRow,
+      $$EvolutionMethodsTableTableFilterComposer,
+      $$EvolutionMethodsTableTableOrderingComposer,
+      $$EvolutionMethodsTableTableAnnotationComposer,
+      $$EvolutionMethodsTableTableCreateCompanionBuilder,
+      $$EvolutionMethodsTableTableUpdateCompanionBuilder,
+      (EvolutionMethodRow, $$EvolutionMethodsTableTableReferences),
+      EvolutionMethodRow,
+      PrefetchHooks Function({bool speciesId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7086,4 +8639,8 @@ class $AppDatabaseManager {
       $$AbilitiesTableTableTableManager(_db, _db.abilitiesTable);
   $$PokemonAbilitiesTableTableTableManager get pokemonAbilitiesTable =>
       $$PokemonAbilitiesTableTableTableManager(_db, _db.pokemonAbilitiesTable);
+  $$EvolutionSpeciesTableTableTableManager get evolutionSpeciesTable =>
+      $$EvolutionSpeciesTableTableTableManager(_db, _db.evolutionSpeciesTable);
+  $$EvolutionMethodsTableTableTableManager get evolutionMethodsTable =>
+      $$EvolutionMethodsTableTableTableManager(_db, _db.evolutionMethodsTable);
 }
