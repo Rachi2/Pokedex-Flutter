@@ -43,9 +43,11 @@ class TypeEfficaciesTable extends Table {
   @override
   String get tableName => 'type_efficacies';
 
+  @ReferenceName('defendingEfficacies')
   IntColumn get defendingTypeId =>
       integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
 
+  @ReferenceName('attackingEfficacies')
   IntColumn get attackingTypeId =>
       integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
 
