@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/tables/pokemon_table.dart';
 
+/// Tabla abilities: el catalogo de talentos, con nombre y efecto en
+/// espanol e ingles.
 @DataClassName('AbilityRow')
 class AbilitiesTable extends Table {
   @override
@@ -17,6 +19,8 @@ class AbilitiesTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Tabla pokemon_abilities: las dotes de cada Pokémon por slot (1 a 3);
+/// isHidden marca la oculta. La misma habilidad no se repite en un Pokémon.
 @DataClassName('PokemonAbilityRow')
 class PokemonAbilitiesTable extends Table {
   @override

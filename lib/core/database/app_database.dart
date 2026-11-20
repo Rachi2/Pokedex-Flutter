@@ -47,7 +47,7 @@ part 'app_database.g.dart';
   ],
   daos: [SyncMetadataDao],
 )
-/// Almacen local de la app: registra las cinco tablas y el DAO, y activa
+/// Almacen local de la app: registra las veinte tablas y el DAO, y activa
 /// las claves foraneas al abrir.
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
@@ -59,6 +59,8 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
+      // Escalon de v1 a v2: crea las tablas, columnas e indices nuevos sin
+      // tocar los favoritos ni los datos que ya estaban guardados.
       if (from < 2) {
         await m.createTable(statsTable);
         await m.createTable(pokemonStatsTable);

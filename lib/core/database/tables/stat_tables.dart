@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/tables/pokemon_table.dart';
 
+/// Tabla stats: los seis atributos de combate (ps, ataque, defensa,
+/// ataque especial, defensa especial y velocidad).
 @DataClassName('StatRow')
 class StatsTable extends Table {
   @override
@@ -13,6 +15,8 @@ class StatsTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Tabla pokemon_stats: el valor base de cada Pokémon en cada estadistica
+/// (1 a 255) y los puntos de esfuerzo que da al vencerlo (0 a 3).
 @DataClassName('PokemonStatRow')
 class PokemonStatsTable extends Table {
   @override

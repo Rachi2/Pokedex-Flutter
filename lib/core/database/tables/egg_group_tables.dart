@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/tables/pokemon_table.dart';
 
+/// Tabla egg_groups: los grupos de crianza (monstruo, dragon, campo...).
 @DataClassName('EggGroupRow')
 class EggGroupsTable extends Table {
   @override
@@ -13,6 +14,8 @@ class EggGroupsTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Tabla pokemon_egg_groups: la parentela de cada Pokémon, o sea, con que
+/// grupos huevo puede criar.
 @DataClassName('PokemonEggGroupRow')
 class PokemonEggGroupsTable extends Table {
   @override

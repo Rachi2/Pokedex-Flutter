@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
 
-/// Tabla pokemon: la ficha de cada Pokémon (id, numero, nombre e imagenes).
-/// Los indices aceleran las busquedas por nombre y por numero.
+/// Tabla pokemon: la ficha de cada Pokémon (id, numero, nombre, imagenes,
+/// altura, peso y generacion). isDefault separa la forma normal de las megas
+/// y gigamax. Los indices aceleran las busquedas por nombre, numero y
+/// generacion.
 @DataClassName('PokemonRow')
 @TableIndex(name: 'pokemon_name_idx', columns: {#name})
 @TableIndex(name: 'pokemon_dex_number_idx', columns: {#dexNumber})

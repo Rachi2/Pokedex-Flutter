@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:pokedex/core/database/tables/pokemon_table.dart';
 
+/// Tabla moves: el arsenal de movimientos, con tipo, potencia, precision,
+/// pp y clase de dano. Sin clave foranea al tipo: puede no estar guardado.
 @DataClassName('MoveRow')
 class MovesTable extends Table {
   @override
@@ -20,6 +22,9 @@ class MovesTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Tabla pokemon_moves: el repertorio de cada Pokémon, por metodo y nivel.
+/// El orden de la clave sirve de indice para filtrar por metodo y ordenar
+/// por nivel.
 @DataClassName('PokemonMoveRow')
 class PokemonMovesTable extends Table {
   @override

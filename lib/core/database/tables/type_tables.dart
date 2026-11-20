@@ -38,6 +38,9 @@ class PokemonTypesTable extends Table {
   ];
 }
 
+/// Tabla type_efficacies: los multiplicadores de dano entre tipos (0, 50,
+/// 100 o 200 = x0, x0.5, x1, x2). El defensor va primero en la clave para
+/// buscar rapido las debilidades de un Pokémon.
 @DataClassName('TypeEfficacyRow')
 class TypeEfficaciesTable extends Table {
   @override

@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+/// Tabla evolution_species: la genealogia de cada cadena evolutiva.
+/// evolvesFromId apunta a la especie anterior y asi se forman las ramas.
 @DataClassName('EvolutionSpeciesRow')
 @TableIndex(name: 'evolution_species_chain_idx', columns: {#chainId})
 class EvolutionSpeciesTable extends Table {
@@ -15,6 +17,8 @@ class EvolutionSpeciesTable extends Table {
   Set<Column> get primaryKey => {speciesId};
 }
 
+/// Tabla evolution_methods: el detonante de cada evolucion (nivel, objeto,
+/// intercambio, amistad, hora...); una especie puede tener varios.
 @DataClassName('EvolutionMethodRow')
 class EvolutionMethodsTable extends Table {
   @override

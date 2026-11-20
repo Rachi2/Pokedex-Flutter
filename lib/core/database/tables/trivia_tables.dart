@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+/// Tabla trivia_results: una fila por partida con puntaje y aciertos; el
+/// indice de score arma el podio de mejores partidas.
 @DataClassName('TriviaResultRow')
 @TableIndex(name: 'trivia_results_score_idx', columns: {#score})
 class TriviaResultsTable extends Table {
@@ -19,6 +21,8 @@ class TriviaResultsTable extends Table {
   ];
 }
 
+/// Tabla trivia_answers: el desglose de cada partida, pregunta por
+/// pregunta. Sin clave foranea a pokemon: son datos del usuario.
 @DataClassName('TriviaAnswerRow')
 class TriviaAnswersTable extends Table {
   @override
@@ -37,6 +41,8 @@ class TriviaAnswersTable extends Table {
   Set<Column> get primaryKey => {resultId, questionNumber};
 }
 
+/// Tabla achievements: las medallas que gano el usuario y cuando. Cuales
+/// existen y sus umbrales se definen en el codigo.
 @DataClassName('AchievementRow')
 class AchievementsTable extends Table {
   @override

@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+/// Tabla preferences: el casillero de ajustes del usuario, en pares
+/// clave-valor (theme, locale...), para agregar ajustes sin migrar.
 @DataClassName('PreferenceRow')
 class PreferencesTable extends Table {
   @override
