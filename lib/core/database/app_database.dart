@@ -10,6 +10,7 @@ import 'tables/favorites_table.dart';
 import 'tables/pokemon_table.dart';
 import 'tables/sync_metadata_table.dart';
 import 'tables/type_tables.dart';
+import 'tables/stat_tables.dart';
 
 import 'sync_metadata_dao.dart';
 
@@ -22,6 +23,8 @@ part 'app_database.g.dart';
     PokemonTable,
     TypesTable,
     PokemonTypesTable,
+    StatsTable,
+    PokemonStatsTable,
   ],
   daos: [SyncMetadataDao],
 )
@@ -31,11 +34,17 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(statsTable);
+        await m.createTable(pokemonStatsTable);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
