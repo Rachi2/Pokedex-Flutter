@@ -37,3 +37,27 @@ class PokemonTypesTable extends Table {
     {pokemonId, typeId},
   ];
 }
+
+/// Tabla type_efficacies: los multiplicadores de dano entre tipos (0, 50,
+/// 100 o 200 = x0, x0.5, x1, x2). El defensor va primero en la clave para
+/// buscar rapido las debilidades de un Pokémon.
+@DataClassName('TypeEfficacyRow')
+class TypeEfficaciesTable extends Table {
+  @override
+  String get tableName => 'type_efficacies';
+
+  @ReferenceName('defendingEfficacies')
+  IntColumn get defendingTypeId =>
+      integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
+
+  @ReferenceName('attackingEfficacies')
+  IntColumn get attackingTypeId =>
+      integer().references(TypesTable, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get damageFactor =>
+      // ignore: recursive_getters
+      integer().check(damageFactor.isIn([0, 50, 100, 200]))();
+
+  @override
+  Set<Column> get primaryKey => {defendingTypeId, attackingTypeId};
+}
