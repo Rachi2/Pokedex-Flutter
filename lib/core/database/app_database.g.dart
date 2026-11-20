@@ -695,6 +695,21 @@ class $PokemonTableTable extends PokemonTable
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isDefaultMeta = const VerificationMeta(
+    'isDefault',
+  );
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+    'is_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_default" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -706,6 +721,7 @@ class $PokemonTableTable extends PokemonTable
     height,
     weight,
     generationId,
+    isDefault,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -779,6 +795,12 @@ class $PokemonTableTable extends PokemonTable
         ),
       );
     }
+    if (data.containsKey('is_default')) {
+      context.handle(
+        _isDefaultMeta,
+        isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta),
+      );
+    }
     return context;
   }
 
@@ -824,6 +846,10 @@ class $PokemonTableTable extends PokemonTable
         DriftSqlType.int,
         data['${effectivePrefix}generation_id'],
       ),
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
     );
   }
 
@@ -843,6 +869,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   final int? height;
   final int? weight;
   final int? generationId;
+  final bool isDefault;
   const PokemonRow({
     required this.id,
     required this.dexNumber,
@@ -853,6 +880,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     this.height,
     this.weight,
     this.generationId,
+    required this.isDefault,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -876,6 +904,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     if (!nullToAbsent || generationId != null) {
       map['generation_id'] = Variable<int>(generationId);
     }
+    map['is_default'] = Variable<bool>(isDefault);
     return map;
   }
 
@@ -900,6 +929,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
       generationId: generationId == null && nullToAbsent
           ? const Value.absent()
           : Value(generationId),
+      isDefault: Value(isDefault),
     );
   }
 
@@ -918,6 +948,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
       height: serializer.fromJson<int?>(json['height']),
       weight: serializer.fromJson<int?>(json['weight']),
       generationId: serializer.fromJson<int?>(json['generationId']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
     );
   }
   @override
@@ -933,6 +964,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
       'height': serializer.toJson<int?>(height),
       'weight': serializer.toJson<int?>(weight),
       'generationId': serializer.toJson<int?>(generationId),
+      'isDefault': serializer.toJson<bool>(isDefault),
     };
   }
 
@@ -946,6 +978,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     Value<int?> height = const Value.absent(),
     Value<int?> weight = const Value.absent(),
     Value<int?> generationId = const Value.absent(),
+    bool? isDefault,
   }) => PokemonRow(
     id: id ?? this.id,
     dexNumber: dexNumber ?? this.dexNumber,
@@ -956,6 +989,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     height: height.present ? height.value : this.height,
     weight: weight.present ? weight.value : this.weight,
     generationId: generationId.present ? generationId.value : this.generationId,
+    isDefault: isDefault ?? this.isDefault,
   );
   PokemonRow copyWithCompanion(PokemonTableCompanion data) {
     return PokemonRow(
@@ -972,6 +1006,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
       generationId: data.generationId.present
           ? data.generationId.value
           : this.generationId,
+      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
     );
   }
 
@@ -986,7 +1021,8 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('height: $height, ')
           ..write('weight: $weight, ')
-          ..write('generationId: $generationId')
+          ..write('generationId: $generationId, ')
+          ..write('isDefault: $isDefault')
           ..write(')'))
         .toString();
   }
@@ -1002,6 +1038,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     height,
     weight,
     generationId,
+    isDefault,
   );
   @override
   bool operator ==(Object other) =>
@@ -1015,7 +1052,8 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
           other.updatedAt == this.updatedAt &&
           other.height == this.height &&
           other.weight == this.weight &&
-          other.generationId == this.generationId);
+          other.generationId == this.generationId &&
+          other.isDefault == this.isDefault);
 }
 
 class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
@@ -1028,6 +1066,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
   final Value<int?> height;
   final Value<int?> weight;
   final Value<int?> generationId;
+  final Value<bool> isDefault;
   const PokemonTableCompanion({
     this.id = const Value.absent(),
     this.dexNumber = const Value.absent(),
@@ -1038,6 +1077,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
     this.height = const Value.absent(),
     this.weight = const Value.absent(),
     this.generationId = const Value.absent(),
+    this.isDefault = const Value.absent(),
   });
   PokemonTableCompanion.insert({
     this.id = const Value.absent(),
@@ -1049,6 +1089,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
     this.height = const Value.absent(),
     this.weight = const Value.absent(),
     this.generationId = const Value.absent(),
+    this.isDefault = const Value.absent(),
   }) : dexNumber = Value(dexNumber),
        name = Value(name),
        updatedAt = Value(updatedAt);
@@ -1062,6 +1103,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
     Expression<int>? height,
     Expression<int>? weight,
     Expression<int>? generationId,
+    Expression<bool>? isDefault,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1073,6 +1115,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
       if (generationId != null) 'generation_id': generationId,
+      if (isDefault != null) 'is_default': isDefault,
     });
   }
 
@@ -1086,6 +1129,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
     Value<int?>? height,
     Value<int?>? weight,
     Value<int?>? generationId,
+    Value<bool>? isDefault,
   }) {
     return PokemonTableCompanion(
       id: id ?? this.id,
@@ -1097,6 +1141,7 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
       height: height ?? this.height,
       weight: weight ?? this.weight,
       generationId: generationId ?? this.generationId,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 
@@ -1130,6 +1175,9 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
     if (generationId.present) {
       map['generation_id'] = Variable<int>(generationId.value);
     }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
     return map;
   }
 
@@ -1144,7 +1192,8 @@ class PokemonTableCompanion extends UpdateCompanion<PokemonRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('height: $height, ')
           ..write('weight: $weight, ')
-          ..write('generationId: $generationId')
+          ..write('generationId: $generationId, ')
+          ..write('isDefault: $isDefault')
           ..write(')'))
         .toString();
   }
@@ -3743,6 +3792,7 @@ typedef $$PokemonTableTableCreateCompanionBuilder =
       Value<int?> height,
       Value<int?> weight,
       Value<int?> generationId,
+      Value<bool> isDefault,
     });
 typedef $$PokemonTableTableUpdateCompanionBuilder =
     PokemonTableCompanion Function({
@@ -3755,6 +3805,7 @@ typedef $$PokemonTableTableUpdateCompanionBuilder =
       Value<int?> height,
       Value<int?> weight,
       Value<int?> generationId,
+      Value<bool> isDefault,
     });
 
 final class $$PokemonTableTableReferences
@@ -3905,6 +3956,11 @@ class $$PokemonTableTableFilterComposer
 
   ColumnFilters<int> get generationId => $composableBuilder(
     column: $table.generationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4064,6 +4120,11 @@ class $$PokemonTableTableOrderingComposer
     column: $table.generationId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isDefault => $composableBuilder(
+    column: $table.isDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PokemonTableTableAnnotationComposer
@@ -4105,6 +4166,9 @@ class $$PokemonTableTableAnnotationComposer
     column: $table.generationId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => column);
 
   Expression<T> pokemonTypesTableRefs<T extends Object>(
     Expression<T> Function($$PokemonTypesTableTableAnnotationComposer a) f,
@@ -4253,6 +4317,7 @@ class $$PokemonTableTableTableManager
                 Value<int?> height = const Value.absent(),
                 Value<int?> weight = const Value.absent(),
                 Value<int?> generationId = const Value.absent(),
+                Value<bool> isDefault = const Value.absent(),
               }) => PokemonTableCompanion(
                 id: id,
                 dexNumber: dexNumber,
@@ -4263,6 +4328,7 @@ class $$PokemonTableTableTableManager
                 height: height,
                 weight: weight,
                 generationId: generationId,
+                isDefault: isDefault,
               ),
           createCompanionCallback:
               ({
@@ -4275,6 +4341,7 @@ class $$PokemonTableTableTableManager
                 Value<int?> height = const Value.absent(),
                 Value<int?> weight = const Value.absent(),
                 Value<int?> generationId = const Value.absent(),
+                Value<bool> isDefault = const Value.absent(),
               }) => PokemonTableCompanion.insert(
                 id: id,
                 dexNumber: dexNumber,
@@ -4285,6 +4352,7 @@ class $$PokemonTableTableTableManager
                 height: height,
                 weight: weight,
                 generationId: generationId,
+                isDefault: isDefault,
               ),
           withReferenceMapper: (p0) => p0
               .map(
