@@ -15,6 +15,8 @@ import 'tables/egg_group_tables.dart';
 import 'tables/ability_tables.dart';
 import 'tables/evolution_tables.dart';
 import 'tables/move_tables.dart';
+import 'tables/trivia_tables.dart';
+import 'tables/preferences_table.dart';
 
 import 'sync_metadata_dao.dart';
 
@@ -38,6 +40,10 @@ part 'app_database.g.dart';
     EvolutionMethodsTable,
     MovesTable,
     PokemonMovesTable,
+    TriviaResultsTable,
+    TriviaAnswersTable,
+    AchievementsTable,
+    PreferencesTable,
   ],
   daos: [SyncMetadataDao],
 )
@@ -77,6 +83,12 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(pokemonMovesTable);
 
         await m.createTable(typeEfficaciesTable);
+
+        await m.createTable(triviaResultsTable);
+        await m.createTable(triviaAnswersTable);
+        await m.createTable(achievementsTable);
+        await m.createTable(preferencesTable);
+        await m.createIndex(triviaResultsScoreIdx);
       }
     },
     beforeOpen: (details) async {
