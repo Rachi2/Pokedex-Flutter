@@ -1,5 +1,7 @@
 import 'package:graphql/client.dart';
 
+import 'api_outage_simulator.dart';
+
 /// Endpoint de PokeAPI: la direccion de su API GraphQL.
 const pokeApiGraphQLUrl = 'https://graphql.pokeapi.co/v1beta2';
 
@@ -12,9 +14,12 @@ const graphQLRequestTimeout = Duration(seconds: 10);
 ///
 /// Usa FetchPolicy.noCache porque la fuente de verdad es Drift,
 /// no la cache del cliente GraphQL (seccion 6.5 del enunciado).
-GraphQLClient createGraphQLClient() {
+/// Si se pasa [isOutage], cada consulta pasa antes por el simulador de API
+/// caida, que la corta mientras [isOutage] devuelva true.
+GraphQLClient createGraphQLClient({bool Function()? isOutage}) {
+  final http = HttpLink(pokeApiGraphQLUrl);
   return GraphQLClient(
-    link: HttpLink(pokeApiGraphQLUrl),
+    link: isOutage == null ? http : Link.from([OutageLink(isOutage), http]),
     cache: GraphQLCache(),
     defaultPolicies: DefaultPolicies(
       query: Policies(fetch: FetchPolicy.noCache),
