@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:pokedex/core/images/pokemon_image_cache.dart';
 
 /// Imagen persistente: la de un Pokémon, guardada en la caché de disco para
 /// que se vea también sin conexión.
@@ -46,6 +47,7 @@ class PokemonImage extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.contain,
+        cacheManager: PokemonImageCache.instance,
         // El sprite mide 96 px, menos que su espacio: no hace falta reducirlo.
         memCacheWidth: pixelated ? null : cacheWidth,
         filterQuality: pixelated ? FilterQuality.none : FilterQuality.low,
