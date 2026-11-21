@@ -201,7 +201,7 @@ sequenceDiagram
 - **Escrituras completas.** Los Pokémon y los metadatos se guardan en la misma transacción: o se guarda todo o no se guarda nada.
 - **El avance no retrocede.** Volver a descargar las primeras páginas no reinicia el offset guardado.
 - **Sin parpadeo.** Durante toda la actualización en segundo plano el estado queda en `syncing`, y pasa a `success` una sola vez al terminar, así el indicador no cambia en cada página (IND-06).
-- **Datos alterados.** Como cada actualización sobrescribe las filas guardadas con lo de PokeAPI, un dato del catálogo modificado en la base vuelve a su valor original la próxima vez que se abre la app o vuelve la conexión. Favoritos no se toca.
+- **Datos alterados.** Como cada actualización sobrescribe las filas guardadas con lo de PokeAPI, un dato del catálogo modificado en la base vuelve a su valor original la próxima vez que se abre la app, vuelve la conexión o pasa la actualización periódica de cada 5 minutos. Favoritos no se toca.
 
 ## Persistencia local
 
@@ -271,6 +271,31 @@ SELECT count(*) FROM pokemon
 2. Para mostrar el dato alterado en la app: desactivar la conexión y reabrir la app. El catálogo muestra «Prueba», leído de la base.
 3. Volver a activar la conexión sin cerrar la app. La actualización en segundo plano sobrescribe la fila con lo de PokeAPI y la pantalla vuelve a mostrar «Bulbasaur» sola, porque esa escritura sí pasa por Drift. Los favoritos no cambian.
 
+Sin los pasos 2 y 3 también se restaura: con la API disponible, el catálogo se vuelve a descargar cada 5 minutos, así que basta con alterar el dato y esperar.
+
+## Simulador de API caída (PA-08)
+
+Para mostrar qué pasa cuando hay red pero PokeAPI no responde, la app trae un simulador que solo funciona en modo depuración. Mientras está encendido, cada consulta a PokeAPI se corta antes de salir con un error 503, también la comprobación de conectividad.
+
+**Cómo usarlo:**
+
+1. Ejecutar la app en modo depuración y abrir la pestaña **Ajustes**.
+2. Encender **Simular API caída**. El indicador pasa a **Servicio no disponible** en ese momento.
+3. En el catálogo, deslizar la lista hacia abajo para pedir una actualización. Los datos guardados se siguen mostrando.
+4. Apagar el interruptor. El indicador vuelve a **En línea** y la actualización en segundo plano se retoma en unos segundos.
+
+**Qué se ve en la consola:** cada consulta bloqueada y la política de reintentos, con 4 intentos y esperas de 1, 2 y 4 segundos:
+
+```text
+[Simulador] Consulta bloqueada: API caida simulada
+[GraphQL] Catalog <- ServerFailure
+[Retry] Catalog offset 0: intento 1 de 4 fallo (ServerFailure). Reintento en 1000 ms
+[Retry] Catalog offset 0: intento 2 de 4 fallo (ServerFailure). Reintento en 2000 ms
+[Retry] Catalog offset 0: intento 3 de 4 fallo (ServerFailure). Reintento en 4000 ms
+```
+
+En una versión de producción el interruptor no aparece y el simulador no hace nada.
+
 ## Gestión de conectividad
 
 Se manejan por separado dos cosas: la **disponibilidad del servicio** (`ServiceStatus`) y la **sincronización** (`CatalogSyncStatus`). El indicador las combina.
@@ -311,8 +336,7 @@ El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia lo
 - Búsqueda, filtros y orden.
 - Detalle completo: estadísticas, habilidades, evoluciones, movimientos y debilidades.
 - Pantalla de favoritos y trivia.
-- Restauración de datos alterados (OF-19 a OF-21): hoy se sobrescriben al abrir la app y al volver la conexión; faltan la comprobación al abrir el detalle y la periódica mientras la API responde (OF-20).
-- Reintentos automáticos con backoff y manejo específico de la limitación de peticiones.
+- Restauración de datos alterados (OF-20): ya se sobrescriben al abrir la app, al volver la conexión y cada 5 minutos con la API disponible; falta la comprobación al abrir el detalle, que llega con el detalle completo.
 - Comprobación de conectividad duplicada: el coordinador y el indicador abren cada uno la suya.
 - Revisar `sqlite3_flutter_libs`.
 
