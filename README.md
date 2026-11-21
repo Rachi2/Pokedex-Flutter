@@ -49,6 +49,7 @@ dart run build_runner build
 | `graphql` | Cliente de la API de PokeAPI | Ejecuta las consultas GraphQL y permite desactivar su caché con `FetchPolicy.noCache` |
 | `connectivity_plus` | Detectar cambios de red | Avisa cuándo cambia la red; la disponibilidad real se comprueba aparte contra la API |
 | `cached_network_image` | Mostrar y guardar imágenes | Guarda las imágenes en disco para verlas sin conexión |
+| `flutter_cache_manager` | Configurar la caché de imágenes | Fija el límite de archivos y el tiempo sin uso antes de borrarlos; ya venía dentro de `cached_network_image` y se declara porque se usa directamente |
 | `path_provider`, `path` | Ubicar el archivo de la base | Dan la carpeta de documentos de la aplicación y arman la ruta |
 | `sqlite3_flutter_libs` | Soporte nativo de SQLite | Dependencia inicial del proyecto; su versión actual está marcada como descontinuada y queda pendiente revisar si se puede retirar |
 | `cupertino_icons` | Íconos de iOS | Viene con la plantilla de Flutter |
@@ -125,6 +126,7 @@ lib/
 │   ├── database/            # AppDatabase, tablas y SyncMetadataDao
 │   ├── di/                  # Providers compartidos
 │   ├── error/               # Tipos de Failure
+│   ├── images/              # Caché de imágenes (PokemonImageCache)
 │   └── network/             # Cliente GraphQL
 └── features/
     ├── connectivity/
@@ -148,7 +150,7 @@ lib/
 - **Sin bloqueos.** La aplicación abre de inmediato y la sincronización corre en segundo plano, sin `await` en el arranque.
 - **Degradación segura.** Si una descarga falla, se marca el error y los datos guardados se conservan.
 - **Sin conexión.** Como la interfaz solo lee de la base, el catálogo y el detalle funcionan sin internet, también tras cerrar y reabrir la aplicación.
-- **Imágenes.** `cached_network_image` las guarda en disco la primera vez que se muestran. Si una imagen no está guardada y no hay red, aparece el recurso «Imagen no disponible».
+- **Imágenes (PS-08).** El artwork oficial y el sprite de cada Pokémon se guardan en disco la primera vez que se muestran, en una caché propia (`PokemonImageCache`) que comparten todas las pantallas. Admite hasta 3000 archivos: alcanza para los 1025 artworks y los 1025 sprites del catálogo, más las formas. Un artwork pesa unos 135 KB y un sprite, 1 KB, así que el catálogo completo ocupa unos 140 MB. Una imagen que no se usa en 90 días se borra, y si se pasa del límite se borran primero las que llevan más tiempo sin usarse. Si una imagen no está guardada y no hay red, aparece el recurso «Imagen no disponible».
 
 ## GraphQL y paginación
 
@@ -311,7 +313,6 @@ El indicador combina ícono y texto, tiene una etiqueta `Semantics` y anuncia lo
 - Pantalla de favoritos y trivia.
 - Restauración de datos alterados (OF-19 a OF-21): hoy se sobrescriben al abrir la app y al volver la conexión; faltan la comprobación al abrir el detalle y la periódica mientras la API responde (OF-20).
 - Reintentos automáticos con backoff y manejo específico de la limitación de peticiones.
-- Límite de la caché de imágenes. Se usa la configuración por defecto, de 200 archivos, insuficiente para el catálogo completo.
 - Comprobación de conectividad duplicada: el coordinador y el indicador abren cada uno la suya.
 - Revisar `sqlite3_flutter_libs`.
 
