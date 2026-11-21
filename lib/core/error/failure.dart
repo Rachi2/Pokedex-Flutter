@@ -25,6 +25,26 @@ final class ServerFailure extends Failure {
   ]);
 }
 
+/// Saturacion: PokeAPI limito las peticiones (HTTP 429).
+///
+/// Es un ServerFailure, asi la interfaz lo muestra igual que los demas
+/// errores del servidor; la diferencia sirve para reintentar despues.
+final class RateLimitFailure extends ServerFailure {
+  const RateLimitFailure({this.retryAfter})
+    : super('PokeAPI recibió demasiadas peticiones. Intenta en un momento');
+
+  /// Espera que pidio PokeAPI en el encabezado Retry-After, si la mando.
+  final Duration? retryAfter;
+}
+
+/// Incompleta: GraphQL mando datos y errores a la vez.
+///
+/// No se guarda nada de esa respuesta, para no dejar datos a medias.
+final class PartialResponseFailure extends ServerFailure {
+  const PartialResponseFailure()
+    : super('PokeAPI devolvió una respuesta incompleta');
+}
+
 /// Imprevisto: un error que no se sabe clasificar.
 final class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'Ocurrió un error inesperado']);

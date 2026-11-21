@@ -32,6 +32,9 @@ class PokemonRemoteDataSource {
             QueryOptions(
               document: gql(catalogQuery),
               variables: {'offset': offset, 'limit': limit},
+              // all: si llegan datos y errores juntos, se reciben los dos
+              // para poder reconocer una respuesta incompleta.
+              errorPolicy: ErrorPolicy.all,
             ),
           )
           .timeout(graphQLRequestTimeout);
@@ -42,8 +45,8 @@ class PokemonRemoteDataSource {
 
     final exception = result.exception;
     if (exception != null) {
-      final failure = _toFailure(exception);
-      debugPrint('[GraphQL] Catalog <- ${failure.runtimeType}');
+      final failure = _toFailure(exception, hasData: result.data != null);
+      debugPrint('[GraphQL] Catalog <- ${_describe(failure, exception)}');
       throw failure;
     }
 
@@ -67,8 +70,15 @@ class PokemonRemoteDataSource {
   }
 
   /// Clasificador de errores: pasa los de GraphQL a los Failure de la app.
-  Failure _toFailure(OperationException exception) {
+  ///
+  /// [hasData] dice si, ademas de los errores, llegaron datos.
+  Failure _toFailure(OperationException exception, {required bool hasData}) {
     final linkException = exception.linkException;
+
+    // PokeAPI limito las peticiones: va antes que el resto porque la
+    // respuesta 429 puede no ser JSON y parecer un error de formato.
+    final rateLimit = _rateLimit(linkException);
+    if (rateLimit != null) return rateLimit;
 
     // No se pudo llegar al servidor: sin red o sin DNS.
     if (linkException is NetworkException ||
@@ -81,7 +91,41 @@ class PokemonRemoteDataSource {
       return const UnknownFailure();
     }
 
+    // GraphQL respondio con datos y con errores a la vez.
+    if (hasData && exception.graphqlErrors.isNotEmpty) {
+      return const PartialResponseFailure();
+    }
+
     // El servidor respondio, pero con un error o con algo que no se entiende.
     return const ServerFailure();
+  }
+
+  /// Limitador: si PokeAPI respondio HTTP 429, arma el Failure con la
+  /// espera que pide el encabezado Retry-After (en segundos), si lo trae.
+  RateLimitFailure? _rateLimit(LinkException? linkException) {
+    final response = switch (linkException) {
+      HttpLinkServerException(:final response) => response,
+      HttpLinkParserException(:final response) => response,
+      _ => null,
+    };
+    if (response == null || response.statusCode != 429) return null;
+
+    final seconds = int.tryParse(response.headers['retry-after'] ?? '');
+    return RateLimitFailure(
+      retryAfter: seconds == null ? null : Duration(seconds: seconds),
+    );
+  }
+
+  /// Relato del error para la consola, con el detalle que sirve al revisar.
+  String _describe(Failure failure, OperationException exception) {
+    return switch (failure) {
+      RateLimitFailure(:final retryAfter) =>
+        'RateLimitFailure (HTTP 429, Retry-After: '
+            '${retryAfter?.inSeconds ?? '-'} s)',
+      PartialResponseFailure() =>
+        'PartialResponseFailure (${exception.graphqlErrors.length} errores: '
+            '${exception.graphqlErrors.first.message})',
+      _ => '${failure.runtimeType}',
+    };
   }
 }

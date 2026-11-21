@@ -12,6 +12,7 @@ class RetryPolicy {
     this.maxAttempts = 4,
     this.initialDelay = const Duration(seconds: 1),
     this.maxDelay = const Duration(seconds: 8),
+    this.maxRetryAfter = const Duration(seconds: 30),
     this.wait = _sleep,
   });
 
@@ -23,6 +24,9 @@ class RetryPolicy {
 
   /// Tope de la espera entre intentos.
   final Duration maxDelay;
+
+  /// Lo maximo que se respeta del Retry-After de un 429.
+  final Duration maxRetryAfter;
 
   /// Como se espera. Las pruebas pasan una que no espera de verdad.
   final Future<void> Function(Duration) wait;
@@ -47,7 +51,15 @@ class RetryPolicy {
       } catch (error) {
         if (attempt >= maxAttempts || !retryIf(error)) rethrow;
 
-        final delay = delayFor(attempt);
+        var delay = delayFor(attempt);
+        // Tope: si PokeAPI pidio esperar mas (HTTP 429), se respeta,
+        // pero nunca mas de [maxRetryAfter].
+        if (error is RateLimitFailure && error.retryAfter != null) {
+          final asked = error.retryAfter! < maxRetryAfter
+              ? error.retryAfter!
+              : maxRetryAfter;
+          if (asked > delay) delay = asked;
+        }
         debugPrint(
           '[Retry] $label: intento $attempt de $maxAttempts fallo '
           '(${error.runtimeType}). Reintento en ${delay.inMilliseconds} ms',
