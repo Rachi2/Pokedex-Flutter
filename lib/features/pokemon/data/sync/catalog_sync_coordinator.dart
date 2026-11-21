@@ -25,6 +25,7 @@ class CatalogSyncCoordinator {
     required this._connectivity,
     this.pageDelay = const Duration(milliseconds: 500),
     this.retryPolicy = const RetryPolicy(),
+    this.restoreInterval = const Duration(minutes: 5),
   });
 
   final AppDatabase _database;
@@ -38,6 +39,9 @@ class CatalogSyncCoordinator {
 
   /// Reintentos de cada pagina cuando PokeAPI falla de forma pasajera.
   final RetryPolicy retryPolicy;
+
+  /// Cada cuanto se vuelve a actualizar el catalogo mientras la API responde.
+  final Duration restoreInterval;
 
   static const _key = SyncMetadataDao.catalogKey;
 
@@ -53,6 +57,10 @@ class CatalogSyncCoordinator {
 
   StreamSubscription<ServiceStatus>? _connectivitySubscription;
   ServiceStatus? _lastStatus;
+
+  /// Timer de la restauracion periodica; null mientras no hay API.
+  Timer? _restoreTimer;
+
   var _disposed = false;
 
   /// Arranque del coordinador: empieza a escuchar la conectividad. Se llama
@@ -84,6 +92,8 @@ class CatalogSyncCoordinator {
   /// Fin de la escucha: deja de escuchar la conectividad.
   Future<void> dispose() async {
     _disposed = true;
+    _restoreTimer?.cancel();
+    _restoreTimer = null;
     await _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
   }
@@ -109,6 +119,24 @@ class CatalogSyncCoordinator {
     final cameBack = status.canReachApi && _lastStatus != ServiceStatus.online;
     _lastStatus = status;
     if (cameBack) unawaited(_updateCatalog());
+    _scheduleRestore(status);
+  }
+
+  /// Vigilancia periodica: mientras la API responde, repite la actualizacion
+  /// cada [restoreInterval]. Asi un dato del catalogo alterado en la base
+  /// vuelve solo a su valor de PokeAPI. Sin API el reloj se detiene.
+  void _scheduleRestore(ServiceStatus status) {
+    if (!status.canReachApi) {
+      _restoreTimer?.cancel();
+      _restoreTimer = null;
+      return;
+    }
+    _restoreTimer ??= Timer.periodic(restoreInterval, (_) {
+      // Si ya hay una actualizacion corriendo, esta vuelta se salta.
+      if (!_canDownload || _batch != null) return;
+      debugPrint('[Sync] Restauracion periodica del catalogo');
+      unawaited(_updateCatalog());
+    });
   }
 
   /// Puerta de la actualizacion: deja pasar una sola a la vez.
