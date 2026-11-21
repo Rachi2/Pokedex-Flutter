@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:pokedex/core/database/app_database.dart';
 import 'package:pokedex/core/database/sync_metadata_dao.dart';
 import 'package:pokedex/core/error/failure.dart';
+import 'package:pokedex/core/sync/retry_policy.dart';
 import 'package:pokedex/features/connectivity/domain/entities/service_status.dart';
 import 'package:pokedex/features/connectivity/domain/repositories/connectivity_repository.dart';
 import 'package:pokedex/features/pokemon/domain/entities/catalog_sync_status.dart';
@@ -23,6 +24,7 @@ class CatalogSyncCoordinator {
     required this._syncDao,
     required this._connectivity,
     this.pageDelay = const Duration(milliseconds: 500),
+    this.retryPolicy = const RetryPolicy(),
   });
 
   final AppDatabase _database;
@@ -33,6 +35,9 @@ class CatalogSyncCoordinator {
 
   /// Pausa entre paginas de la actualizacion en segundo plano.
   final Duration pageDelay;
+
+  /// Reintentos de cada pagina cuando PokeAPI falla de forma pasajera.
+  final RetryPolicy retryPolicy;
 
   static const _key = SyncMetadataDao.catalogKey;
 
@@ -218,9 +223,9 @@ class CatalogSyncCoordinator {
   Future<void> _syncPage(int offset, {bool keepSyncing = false}) async {
     await _syncDao.markSyncing(_key);
     try {
-      final page = await _remote.fetchPage(
-        offset: offset,
-        limit: catalogPageSize,
+      final page = await retryPolicy.run(
+        () => _remote.fetchPage(offset: offset, limit: catalogPageSize),
+        label: 'Catalog offset $offset',
       );
 
       final now = DateTime.now();
