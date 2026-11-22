@@ -53,7 +53,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -91,6 +91,21 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(achievementsTable);
         await m.createTable(preferencesTable);
         await m.createIndex(triviaResultsScoreIdx);
+      }
+
+      if (from == 2) {
+        await m.addColumn(
+          evolutionMethodsTable,
+          evolutionMethodsTable.location,
+        );
+        await m.addColumn(
+          evolutionMethodsTable,
+          evolutionMethodsTable.knownMove,
+        );
+        await m.addColumn(
+          evolutionMethodsTable,
+          evolutionMethodsTable.knownMoveType,
+        );
       }
     },
     beforeOpen: (details) async {
