@@ -33,6 +33,9 @@ class PokemonDto {
     required this.artworkUrl,
     required this.spriteUrl,
     required this.types,
+    this.height,
+    this.weight,
+    this.generationId,
   });
 
   final int id;
@@ -41,6 +44,13 @@ class PokemonDto {
   final String? artworkUrl;
   final String? spriteUrl;
   final List<PokemonTypeDto> types;
+
+  /// Altura en decimetros y peso en hectogramos, como los manda PokeAPI.
+  final int? height;
+  final int? weight;
+
+  /// Generacion en la que aparecio la especie (1 a 9).
+  final int? generationId;
 
   /// Imagen a mostrar: el artwork oficial y, si no existe, el sprite normal.
   String? get imageUrl => artworkUrl ?? spriteUrl;
@@ -77,6 +87,13 @@ class PokemonDto {
       }
     }
 
+    final height = json['height'];
+    final weight = json['weight'];
+    final species = json['pokemonspecy'];
+    final generationId = species is Map<String, dynamic>
+        ? species['generation_id']
+        : null;
+
     return PokemonDto(
       id: id,
       name: name,
@@ -84,6 +101,9 @@ class PokemonDto {
       artworkUrl: artworkUrl,
       spriteUrl: spriteUrl,
       types: types,
+      height: height is int ? height : null,
+      weight: weight is int ? weight : null,
+      generationId: generationId is int ? generationId : null,
     );
   }
 }

@@ -7,6 +7,7 @@ const catalogPageSize = 50;
 /// - Filtra is_default = true: solo la forma principal de cada especie
 ///   (sin megas ni formas regionales).
 /// - pokemon_aggregate devuelve el total para saber cuantos hay en PokeAPI.
+/// - Altura, peso y generacion van a las columnas del mismo nombre.
 /// - De sprites solo se piden dos rutas del JSON: el artwork oficial
 ///   y el sprite normal como respaldo.
 const catalogQuery = r'''
@@ -20,6 +21,11 @@ query Catalog($limit: Int!, $offset: Int!) {
     id
     name
     pokemon_species_id
+        height
+    weight
+    pokemonspecy {
+      generation_id
+    }
     pokemontypes(order_by: {slot: asc}) {
       slot
       type {
