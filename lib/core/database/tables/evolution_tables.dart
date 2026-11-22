@@ -36,6 +36,9 @@ class EvolutionMethodsTable extends Table {
   TextColumn get heldItem => text().nullable()();
   IntColumn get minHappiness => integer().nullable()();
   TextColumn get timeOfDay => text().nullable()();
+  TextColumn get location => text().nullable()();
+  TextColumn get knownMove => text().nullable()();
+  TextColumn get knownMoveType => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

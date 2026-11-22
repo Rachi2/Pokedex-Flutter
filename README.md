@@ -205,7 +205,7 @@ sequenceDiagram
 
 ## Persistencia local
 
-La base es SQLite con Drift, en el archivo `pokedex.sqlite` (esquema versión 2, con 20 tablas). Las tablas del catálogo y del detalle usan los ids de PokeAPI. Las claves foráneas se activan con `PRAGMA foreign_keys = ON` al abrir la base, y todas las de esta lista borran en cascada.
+La base es SQLite con Drift, en el archivo `pokedex.sqlite` (esquema versión 3, con 20 tablas). Las tablas del catálogo y del detalle usan los ids de PokeAPI. Las claves foráneas se activan con `PRAGMA foreign_keys = ON` al abrir la base, y todas las de esta lista borran en cascada.
 
 **Catálogo**
 
@@ -227,7 +227,7 @@ La base es SQLite con Drift, en el archivo `pokedex.sqlite` (esquema versión 2,
 | `abilities` | id, nombre, y nombre y efecto en español e inglés | `id` | |
 | `pokemon_abilities` | Habilidades de cada Pokémon con su slot e `is_hidden` | `(pokemon_id, slot)` | Único `(pokemon_id, ability_id)`; `slot` de 1 a 3 |
 | `evolution_species` | Especies de cada cadena evolutiva; `evolves_from_id` apunta a la anterior y forma las ramas | `species_id` | Índice `evolution_species_chain_idx`. Sin clave foránea a `pokemon`: la cadena incluye especies que pueden no estar guardadas |
-| `evolution_methods` | Disparador de cada evolución: nivel, objeto, objeto equipado, amistad u hora | `id` | Clave foránea a `evolution_species` |
+| `evolution_methods` | Disparador de cada evolución: nivel, objeto, objeto equipado, amistad, hora, lugar, movimiento conocido o tipo de movimiento conocido | `id` | Clave foránea a `evolution_species` |
 | `moves` | id, nombres, tipo, potencia, precisión, PP y clase de daño | `id` | `type_id` sin clave foránea: el tipo puede no estar guardado |
 | `pokemon_moves` | Movimientos de cada Pokémon por método y nivel | `(pokemon_id, method, level, move_id)` | `level` de 0 a 100 (0 para MT, tutor, huevo y al evolucionar) |
 
@@ -244,7 +244,10 @@ La base es SQLite con Drift, en el archivo `pokedex.sqlite` (esquema versión 2,
 
 **Índices y consultas (RNF-REN-03).** Además de los índices declarados, cada clave primaria compuesta funciona como índice, y su orden está elegido para la consulta que la usa: `pokemon_moves` filtra por Pokémon y método y devuelve las filas ya ordenadas por nivel; `type_efficacies` busca por tipo defensor para calcular las debilidades.
 
-**Migración de la versión 1 a la 2.** `onUpgrade` crea las tablas, columnas e índices nuevos sin tocar los datos guardados. `is_default` entra con valor `true` para que los Pokémon que ya estaban en la base sigan saliendo en el catálogo. Los favoritos se conservan.
+**Migraciones.** `onUpgrade` lleva la base a la versión actual sin tocar los datos guardados; los favoritos se conservan en todos los casos.
+
+- **De la 1 a la 2:** crea las tablas, columnas e índices nuevos. `is_default` entra con valor `true` para que los Pokémon que ya estaban en la base sigan saliendo en el catálogo.
+- **De la 2 a la 3:** agrega a `evolution_methods` las columnas `location`, `known_move` y `known_move_type`, para evoluciones como Leafeon (por lugar) o Sylveon (por tipo de movimiento). Solo se aplica a bases que estaban en la versión 2: una base en la versión 1 crea `evolution_methods` en el paso anterior con la definición actual, que ya incluye esas columnas, y agregarlas otra vez fallaría.
 
 **Datos del usuario.** `favorites`, `trivia_answers` y `achievements` no tienen clave foránea hacia el catálogo, y la sincronización nunca escribe en esas tablas ni en `trivia_results` o `preferences`. Así, los datos del usuario no dependen de lo que pase con el catálogo (PS-11).
 
