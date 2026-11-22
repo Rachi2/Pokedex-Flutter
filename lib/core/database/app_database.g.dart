@@ -3994,6 +3994,39 @@ class $EvolutionMethodsTableTable extends EvolutionMethodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _locationMeta = const VerificationMeta(
+    'location',
+  );
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+    'location',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _knownMoveMeta = const VerificationMeta(
+    'knownMove',
+  );
+  @override
+  late final GeneratedColumn<String> knownMove = GeneratedColumn<String>(
+    'known_move',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _knownMoveTypeMeta = const VerificationMeta(
+    'knownMoveType',
+  );
+  @override
+  late final GeneratedColumn<String> knownMoveType = GeneratedColumn<String>(
+    'known_move_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4004,6 +4037,9 @@ class $EvolutionMethodsTableTable extends EvolutionMethodsTable
     heldItem,
     minHappiness,
     timeOfDay,
+    location,
+    knownMove,
+    knownMoveType,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4069,6 +4105,27 @@ class $EvolutionMethodsTableTable extends EvolutionMethodsTable
         timeOfDay.isAcceptableOrUnknown(data['time_of_day']!, _timeOfDayMeta),
       );
     }
+    if (data.containsKey('location')) {
+      context.handle(
+        _locationMeta,
+        location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
+    }
+    if (data.containsKey('known_move')) {
+      context.handle(
+        _knownMoveMeta,
+        knownMove.isAcceptableOrUnknown(data['known_move']!, _knownMoveMeta),
+      );
+    }
+    if (data.containsKey('known_move_type')) {
+      context.handle(
+        _knownMoveTypeMeta,
+        knownMoveType.isAcceptableOrUnknown(
+          data['known_move_type']!,
+          _knownMoveTypeMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4110,6 +4167,18 @@ class $EvolutionMethodsTableTable extends EvolutionMethodsTable
         DriftSqlType.string,
         data['${effectivePrefix}time_of_day'],
       ),
+      location: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location'],
+      ),
+      knownMove: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}known_move'],
+      ),
+      knownMoveType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}known_move_type'],
+      ),
     );
   }
 
@@ -4129,6 +4198,9 @@ class EvolutionMethodRow extends DataClass
   final String? heldItem;
   final int? minHappiness;
   final String? timeOfDay;
+  final String? location;
+  final String? knownMove;
+  final String? knownMoveType;
   const EvolutionMethodRow({
     required this.id,
     required this.speciesId,
@@ -4138,6 +4210,9 @@ class EvolutionMethodRow extends DataClass
     this.heldItem,
     this.minHappiness,
     this.timeOfDay,
+    this.location,
+    this.knownMove,
+    this.knownMoveType,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4160,6 +4235,15 @@ class EvolutionMethodRow extends DataClass
     if (!nullToAbsent || timeOfDay != null) {
       map['time_of_day'] = Variable<String>(timeOfDay);
     }
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
+    if (!nullToAbsent || knownMove != null) {
+      map['known_move'] = Variable<String>(knownMove);
+    }
+    if (!nullToAbsent || knownMoveType != null) {
+      map['known_move_type'] = Variable<String>(knownMoveType);
+    }
     return map;
   }
 
@@ -4181,6 +4265,15 @@ class EvolutionMethodRow extends DataClass
       timeOfDay: timeOfDay == null && nullToAbsent
           ? const Value.absent()
           : Value(timeOfDay),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
+      knownMove: knownMove == null && nullToAbsent
+          ? const Value.absent()
+          : Value(knownMove),
+      knownMoveType: knownMoveType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(knownMoveType),
     );
   }
 
@@ -4198,6 +4291,9 @@ class EvolutionMethodRow extends DataClass
       heldItem: serializer.fromJson<String?>(json['heldItem']),
       minHappiness: serializer.fromJson<int?>(json['minHappiness']),
       timeOfDay: serializer.fromJson<String?>(json['timeOfDay']),
+      location: serializer.fromJson<String?>(json['location']),
+      knownMove: serializer.fromJson<String?>(json['knownMove']),
+      knownMoveType: serializer.fromJson<String?>(json['knownMoveType']),
     );
   }
   @override
@@ -4212,6 +4308,9 @@ class EvolutionMethodRow extends DataClass
       'heldItem': serializer.toJson<String?>(heldItem),
       'minHappiness': serializer.toJson<int?>(minHappiness),
       'timeOfDay': serializer.toJson<String?>(timeOfDay),
+      'location': serializer.toJson<String?>(location),
+      'knownMove': serializer.toJson<String?>(knownMove),
+      'knownMoveType': serializer.toJson<String?>(knownMoveType),
     };
   }
 
@@ -4224,6 +4323,9 @@ class EvolutionMethodRow extends DataClass
     Value<String?> heldItem = const Value.absent(),
     Value<int?> minHappiness = const Value.absent(),
     Value<String?> timeOfDay = const Value.absent(),
+    Value<String?> location = const Value.absent(),
+    Value<String?> knownMove = const Value.absent(),
+    Value<String?> knownMoveType = const Value.absent(),
   }) => EvolutionMethodRow(
     id: id ?? this.id,
     speciesId: speciesId ?? this.speciesId,
@@ -4233,6 +4335,11 @@ class EvolutionMethodRow extends DataClass
     heldItem: heldItem.present ? heldItem.value : this.heldItem,
     minHappiness: minHappiness.present ? minHappiness.value : this.minHappiness,
     timeOfDay: timeOfDay.present ? timeOfDay.value : this.timeOfDay,
+    location: location.present ? location.value : this.location,
+    knownMove: knownMove.present ? knownMove.value : this.knownMove,
+    knownMoveType: knownMoveType.present
+        ? knownMoveType.value
+        : this.knownMoveType,
   );
   EvolutionMethodRow copyWithCompanion(EvolutionMethodsTableCompanion data) {
     return EvolutionMethodRow(
@@ -4246,6 +4353,11 @@ class EvolutionMethodRow extends DataClass
           ? data.minHappiness.value
           : this.minHappiness,
       timeOfDay: data.timeOfDay.present ? data.timeOfDay.value : this.timeOfDay,
+      location: data.location.present ? data.location.value : this.location,
+      knownMove: data.knownMove.present ? data.knownMove.value : this.knownMove,
+      knownMoveType: data.knownMoveType.present
+          ? data.knownMoveType.value
+          : this.knownMoveType,
     );
   }
 
@@ -4259,7 +4371,10 @@ class EvolutionMethodRow extends DataClass
           ..write('item: $item, ')
           ..write('heldItem: $heldItem, ')
           ..write('minHappiness: $minHappiness, ')
-          ..write('timeOfDay: $timeOfDay')
+          ..write('timeOfDay: $timeOfDay, ')
+          ..write('location: $location, ')
+          ..write('knownMove: $knownMove, ')
+          ..write('knownMoveType: $knownMoveType')
           ..write(')'))
         .toString();
   }
@@ -4274,6 +4389,9 @@ class EvolutionMethodRow extends DataClass
     heldItem,
     minHappiness,
     timeOfDay,
+    location,
+    knownMove,
+    knownMoveType,
   );
   @override
   bool operator ==(Object other) =>
@@ -4286,7 +4404,10 @@ class EvolutionMethodRow extends DataClass
           other.item == this.item &&
           other.heldItem == this.heldItem &&
           other.minHappiness == this.minHappiness &&
-          other.timeOfDay == this.timeOfDay);
+          other.timeOfDay == this.timeOfDay &&
+          other.location == this.location &&
+          other.knownMove == this.knownMove &&
+          other.knownMoveType == this.knownMoveType);
 }
 
 class EvolutionMethodsTableCompanion
@@ -4299,6 +4420,9 @@ class EvolutionMethodsTableCompanion
   final Value<String?> heldItem;
   final Value<int?> minHappiness;
   final Value<String?> timeOfDay;
+  final Value<String?> location;
+  final Value<String?> knownMove;
+  final Value<String?> knownMoveType;
   const EvolutionMethodsTableCompanion({
     this.id = const Value.absent(),
     this.speciesId = const Value.absent(),
@@ -4308,6 +4432,9 @@ class EvolutionMethodsTableCompanion
     this.heldItem = const Value.absent(),
     this.minHappiness = const Value.absent(),
     this.timeOfDay = const Value.absent(),
+    this.location = const Value.absent(),
+    this.knownMove = const Value.absent(),
+    this.knownMoveType = const Value.absent(),
   });
   EvolutionMethodsTableCompanion.insert({
     this.id = const Value.absent(),
@@ -4318,6 +4445,9 @@ class EvolutionMethodsTableCompanion
     this.heldItem = const Value.absent(),
     this.minHappiness = const Value.absent(),
     this.timeOfDay = const Value.absent(),
+    this.location = const Value.absent(),
+    this.knownMove = const Value.absent(),
+    this.knownMoveType = const Value.absent(),
   }) : speciesId = Value(speciesId),
        trigger = Value(trigger);
   static Insertable<EvolutionMethodRow> custom({
@@ -4329,6 +4459,9 @@ class EvolutionMethodsTableCompanion
     Expression<String>? heldItem,
     Expression<int>? minHappiness,
     Expression<String>? timeOfDay,
+    Expression<String>? location,
+    Expression<String>? knownMove,
+    Expression<String>? knownMoveType,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4339,6 +4472,9 @@ class EvolutionMethodsTableCompanion
       if (heldItem != null) 'held_item': heldItem,
       if (minHappiness != null) 'min_happiness': minHappiness,
       if (timeOfDay != null) 'time_of_day': timeOfDay,
+      if (location != null) 'location': location,
+      if (knownMove != null) 'known_move': knownMove,
+      if (knownMoveType != null) 'known_move_type': knownMoveType,
     });
   }
 
@@ -4351,6 +4487,9 @@ class EvolutionMethodsTableCompanion
     Value<String?>? heldItem,
     Value<int?>? minHappiness,
     Value<String?>? timeOfDay,
+    Value<String?>? location,
+    Value<String?>? knownMove,
+    Value<String?>? knownMoveType,
   }) {
     return EvolutionMethodsTableCompanion(
       id: id ?? this.id,
@@ -4361,6 +4500,9 @@ class EvolutionMethodsTableCompanion
       heldItem: heldItem ?? this.heldItem,
       minHappiness: minHappiness ?? this.minHappiness,
       timeOfDay: timeOfDay ?? this.timeOfDay,
+      location: location ?? this.location,
+      knownMove: knownMove ?? this.knownMove,
+      knownMoveType: knownMoveType ?? this.knownMoveType,
     );
   }
 
@@ -4391,6 +4533,15 @@ class EvolutionMethodsTableCompanion
     if (timeOfDay.present) {
       map['time_of_day'] = Variable<String>(timeOfDay.value);
     }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (knownMove.present) {
+      map['known_move'] = Variable<String>(knownMove.value);
+    }
+    if (knownMoveType.present) {
+      map['known_move_type'] = Variable<String>(knownMoveType.value);
+    }
     return map;
   }
 
@@ -4404,7 +4555,10 @@ class EvolutionMethodsTableCompanion
           ..write('item: $item, ')
           ..write('heldItem: $heldItem, ')
           ..write('minHappiness: $minHappiness, ')
-          ..write('timeOfDay: $timeOfDay')
+          ..write('timeOfDay: $timeOfDay, ')
+          ..write('location: $location, ')
+          ..write('knownMove: $knownMove, ')
+          ..write('knownMoveType: $knownMoveType')
           ..write(')'))
         .toString();
   }
@@ -11235,6 +11389,9 @@ typedef $$EvolutionMethodsTableTableCreateCompanionBuilder =
       Value<String?> heldItem,
       Value<int?> minHappiness,
       Value<String?> timeOfDay,
+      Value<String?> location,
+      Value<String?> knownMove,
+      Value<String?> knownMoveType,
     });
 typedef $$EvolutionMethodsTableTableUpdateCompanionBuilder =
     EvolutionMethodsTableCompanion Function({
@@ -11246,6 +11403,9 @@ typedef $$EvolutionMethodsTableTableUpdateCompanionBuilder =
       Value<String?> heldItem,
       Value<int?> minHappiness,
       Value<String?> timeOfDay,
+      Value<String?> location,
+      Value<String?> knownMove,
+      Value<String?> knownMoveType,
     });
 
 final class $$EvolutionMethodsTableTableReferences
@@ -11325,6 +11485,21 @@ class $$EvolutionMethodsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get knownMove => $composableBuilder(
+    column: $table.knownMove,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get knownMoveType => $composableBuilder(
+    column: $table.knownMoveType,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$EvolutionSpeciesTableTableFilterComposer get speciesId {
     final $$EvolutionSpeciesTableTableFilterComposer composer =
         $composerBuilder(
@@ -11394,6 +11569,21 @@ class $$EvolutionMethodsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get location => $composableBuilder(
+    column: $table.location,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get knownMove => $composableBuilder(
+    column: $table.knownMove,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get knownMoveType => $composableBuilder(
+    column: $table.knownMoveType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$EvolutionSpeciesTableTableOrderingComposer get speciesId {
     final $$EvolutionSpeciesTableTableOrderingComposer composer =
         $composerBuilder(
@@ -11450,6 +11640,17 @@ class $$EvolutionMethodsTableTableAnnotationComposer
 
   GeneratedColumn<String> get timeOfDay =>
       $composableBuilder(column: $table.timeOfDay, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get knownMove =>
+      $composableBuilder(column: $table.knownMove, builder: (column) => column);
+
+  GeneratedColumn<String> get knownMoveType => $composableBuilder(
+    column: $table.knownMoveType,
+    builder: (column) => column,
+  );
 
   $$EvolutionSpeciesTableTableAnnotationComposer get speciesId {
     final $$EvolutionSpeciesTableTableAnnotationComposer composer =
@@ -11523,6 +11724,9 @@ class $$EvolutionMethodsTableTableTableManager
                 Value<String?> heldItem = const Value.absent(),
                 Value<int?> minHappiness = const Value.absent(),
                 Value<String?> timeOfDay = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> knownMove = const Value.absent(),
+                Value<String?> knownMoveType = const Value.absent(),
               }) => EvolutionMethodsTableCompanion(
                 id: id,
                 speciesId: speciesId,
@@ -11532,6 +11736,9 @@ class $$EvolutionMethodsTableTableTableManager
                 heldItem: heldItem,
                 minHappiness: minHappiness,
                 timeOfDay: timeOfDay,
+                location: location,
+                knownMove: knownMove,
+                knownMoveType: knownMoveType,
               ),
           createCompanionCallback:
               ({
@@ -11543,6 +11750,9 @@ class $$EvolutionMethodsTableTableTableManager
                 Value<String?> heldItem = const Value.absent(),
                 Value<int?> minHappiness = const Value.absent(),
                 Value<String?> timeOfDay = const Value.absent(),
+                Value<String?> location = const Value.absent(),
+                Value<String?> knownMove = const Value.absent(),
+                Value<String?> knownMoveType = const Value.absent(),
               }) => EvolutionMethodsTableCompanion.insert(
                 id: id,
                 speciesId: speciesId,
@@ -11552,6 +11762,9 @@ class $$EvolutionMethodsTableTableTableManager
                 heldItem: heldItem,
                 minHappiness: minHappiness,
                 timeOfDay: timeOfDay,
+                location: location,
+                knownMove: knownMove,
+                knownMoveType: knownMoveType,
               ),
           withReferenceMapper: (p0) => p0
               .map(
