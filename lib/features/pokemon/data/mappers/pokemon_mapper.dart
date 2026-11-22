@@ -25,6 +25,9 @@ class PokemonMapper {
         spriteUrl: dto.spriteUrl,
         artworkUrl: dto.artworkUrl,
         updatedAt: updatedAt,
+        height: dto.height,
+        weight: dto.weight,
+        generationId: dto.generationId,
         // Se coloca true fijo porque la consulta del catalogo solo trae formas normales
         isDefault: true,
       ),
