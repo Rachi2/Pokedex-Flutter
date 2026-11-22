@@ -159,7 +159,7 @@ abstract final class DetailLabels {
   };
 }
 
-/// Variocolor: el mismo Pokemon con las imagenes shiny. PokeAPI las guarda
+/// Espejo shiny: el mismo Pokemon con las imagenes shiny. PokeAPI las guarda
 /// en una carpeta "shiny" junto a las normales, asi que la URL se deriva.
 extension PokemonShiny on Pokemon {
   Pokemon get shiny => Pokemon(

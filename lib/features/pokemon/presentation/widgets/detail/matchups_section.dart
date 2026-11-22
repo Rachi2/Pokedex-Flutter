@@ -5,7 +5,7 @@ import 'package:pokedex/features/pokemon/domain/entities/type_chart.dart';
 import '../type_chip.dart';
 import 'detail_section.dart';
 
-/// Debilidades y resistencias: los tipos atacantes agrupados por cuanto
+/// Cuadro de debilidades: los tipos atacantes agrupados por cuanto
 /// dano le hacen a este Pokemon (x4, x2, x1/2, x1/4, x0).
 class MatchupsSection extends StatelessWidget {
   const MatchupsSection({

@@ -66,7 +66,7 @@ class _DetailPreviewPageState extends State<DetailPreviewPage> {
   }
 }
 
-/// Datos de prueba: Charizard (tipo doble, x4, megas) y Eevee (cadena con
+/// Muestrario: Charizard (tipo doble, x4, megas) y Eevee (cadena con
 /// ocho ramas, habilidad oculta y una gigamax sin movimientos).
 abstract final class _Samples {
   static const _art =
