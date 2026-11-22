@@ -31,7 +31,10 @@ class PokemonLocalDataSource {
   /// Flujo del catalogo: emite lo guardado, ordenado por numero de Pokedex,
   /// cada vez que cambia alguna de las tablas del catalogo.
   Stream<List<PokemonWithTypes>> watchCatalog() {
-    return _withTypes().watch().map(_group);
+    // Solo formas normales: las megas y gigamax que guarda el detalle no
+    // se muestran en la lista.
+    final query = _withTypes()..where(_db.pokemonTable.isDefault.equals(true));
+    return query.watch().map(_group);
   }
 
   /// Flujo individual: emite un Pokemon, o null si no esta guardado.
