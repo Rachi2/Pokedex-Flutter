@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/core_providers.dart';
 import '../../../../core/network/api_outage_simulator.dart';
+import '../../../pokemon/presentation/pages/detail_preview_page.dart';
 
 /// Tablero de ajustes. Por ahora solo trae, en modo depuracion, el
 /// interruptor del simulador de API caida; el tema y el idioma se agregan
@@ -34,6 +35,20 @@ class SettingsPage extends ConsumerWidget {
               // El indicador comprueba la API cada 30 s; asi lo hace ya.
               ref.invalidate(serviceStatusProvider);
             },
+          ),
+          ListTile(
+            leading: const Icon(Icons.preview_outlined),
+            title: const Text('Vista previa del detalle'),
+            subtitle: const Text(
+              'Las secciones del detalle con datos de prueba, mientras el '
+              'repositorio del detalle no está conectado.',
+            ),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const DetailPreviewPage(),
+              ),
+            ),
           ),
           const Divider(),
         ],
