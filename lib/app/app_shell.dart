@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
 import 'package:pokedex/features/pokemon/presentation/pages/catalog_page.dart';
 import 'package:pokedex/features/pokemon/presentation/providers/catalog_provider.dart';
+import 'package:pokedex/features/settings/presentation/pages/settings_page.dart';
 
 /// Armazon de las pantallas principales: el indicador de conectividad fijo
 /// arriba y la barra de navegacion inferior.
@@ -58,7 +59,7 @@ class _AppShellState extends ConsumerState<AppShell> {
               children: const [
                 CatalogPage(),
                 _ComingSoon(title: 'Favoritos'),
-                _ComingSoon(title: 'Ajustes'),
+                SettingsPage(),
               ],
             ),
           ),
@@ -170,7 +171,7 @@ class _PokeballPainter extends CustomPainter {
       oldDelegate.outline != outline;
 }
 
-/// Pestaña provisional: Favoritos y Ajustes todavia no existen.
+/// Pestaña provisional: Favoritos todavia no existe.
 class _ComingSoon extends StatelessWidget {
   const _ComingSoon({required this.title});
 
