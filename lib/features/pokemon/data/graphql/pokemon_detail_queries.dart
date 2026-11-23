@@ -153,6 +153,15 @@ query PokemonDetail($id: Int!, $versionGroup: Int!) {
             helditem: ItemByHeldItemId {
               name
             }
+            location {
+              name
+            }
+            move {
+              name
+            }
+            type {
+              name
+            }
           }
         }
       }

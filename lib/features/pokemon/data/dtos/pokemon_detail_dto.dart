@@ -196,6 +196,9 @@ class EvolutionMethodDto {
     this.timeOfDay,
     this.item,
     this.heldItem,
+    this.location,
+    this.knownMove,
+    this.knownMoveType,
   });
 
   final int id;
@@ -210,6 +213,15 @@ class EvolutionMethodDto {
   final String? item;
   final String? heldItem;
 
+  /// Lugar donde hay que subir de nivel (Leafeon, Glaceon).
+  final String? location;
+
+  /// Movimiento que tiene que conocer (Ambipom).
+  final String? knownMove;
+
+  /// Tipo de movimiento que tiene que conocer (Sylveon: fairy).
+  final String? knownMoveType;
+
   static EvolutionMethodDto? tryFromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final trigger = json['evolutiontrigger'];
@@ -219,6 +231,9 @@ class EvolutionMethodDto {
     final timeOfDay = json['time_of_day'];
     final item = json['item'];
     final heldItem = json['helditem'];
+    final location = json['location'];
+    final knownMove = json['move'];
+    final knownMoveType = json['type'];
     return EvolutionMethodDto(
       id: id,
       trigger: triggerName,
@@ -228,6 +243,15 @@ class EvolutionMethodDto {
       item: item is Map<String, dynamic> ? _stringOrNull(item['name']) : null,
       heldItem: heldItem is Map<String, dynamic>
           ? _stringOrNull(heldItem['name'])
+          : null,
+      location: location is Map<String, dynamic>
+          ? _stringOrNull(location['name'])
+          : null,
+      knownMove: knownMove is Map<String, dynamic>
+          ? _stringOrNull(knownMove['name'])
+          : null,
+      knownMoveType: knownMoveType is Map<String, dynamic>
+          ? _stringOrNull(knownMoveType['name'])
           : null,
     );
   }
