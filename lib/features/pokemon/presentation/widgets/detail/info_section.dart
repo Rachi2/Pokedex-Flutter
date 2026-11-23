@@ -20,6 +20,10 @@ class InfoSection extends StatelessWidget {
     final weight = detail.weightKilograms;
     final generation = detail.generationId;
     final eggGroups = detail.eggGroups.map(DetailLabels.eggGroup).join(', ');
+    // La forma normal lleva el nombre de la especie ("charizard").
+    final species =
+        detail.forms.where((form) => form.isDefault).firstOrNull?.name ??
+        detail.pokemon.name;
 
     final rows = [
       ('Altura', height == null ? '—' : '${_decimal(height)} m'),
@@ -55,7 +59,7 @@ class InfoSection extends StatelessWidget {
               children: [
                 for (final form in detail.forms)
                   ChoiceChip(
-                    label: Text(_formLabel(form)),
+                    label: Text(DetailLabels.form(form, species)),
                     selected: form.id == detail.pokemon.id,
                     onSelected:
                         onOpenForm == null || form.id == detail.pokemon.id
@@ -73,20 +77,6 @@ class InfoSection extends StatelessWidget {
   /// "1.7" -> "1,7": coma decimal como se escribe en espanol.
   static String _decimal(double value) =>
       value.toStringAsFixed(1).replaceAll('.', ',');
-
-  /// Nombre corto de la forma: sin el nombre de la especie delante
-  /// ("charizard-mega-x" -> "Mega X"); la normal se llama «Normal».
-  String _formLabel(PokemonForm form) {
-    if (form.isDefault) return 'Normal';
-    final species = detail.forms
-        .where((f) => f.isDefault)
-        .map((f) => f.name)
-        .firstOrNull;
-    final name = species != null && form.name.startsWith('$species-')
-        ? form.name.substring(species.length + 1)
-        : form.name;
-    return DetailLabels.pretty(name.replaceAll('gmax', 'gigamax'));
-  }
 }
 
 /// Renglon de dato: etiqueta a la izquierda y valor a la derecha.

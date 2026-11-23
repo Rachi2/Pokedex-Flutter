@@ -82,6 +82,16 @@ abstract final class DetailLabels {
     return parts.join(' · ');
   }
 
+  /// Nombre corto de una forma, sin la especie delante:
+  /// ("charizard", "charizard-mega-x") -> "Mega X". La normal es «Normal».
+  static String form(PokemonForm form, String speciesName) {
+    if (form.isDefault) return 'Normal';
+    final name = form.name.startsWith('$speciesName-')
+        ? form.name.substring(speciesName.length + 1)
+        : form.name;
+    return pretty(name.replaceAll('gmax', 'gigamax'));
+  }
+
   static const _stats = {
     'hp': 'PS',
     'attack': 'Ataque',
