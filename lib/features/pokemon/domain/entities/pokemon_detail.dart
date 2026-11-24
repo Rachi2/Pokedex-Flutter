@@ -113,6 +113,9 @@ class EvolutionMethod {
     this.timeOfDay,
     this.item,
     this.heldItem,
+    this.location,
+    this.knownMove,
+    this.knownMoveType,
   });
 
   /// level-up, use-item, trade...
@@ -126,6 +129,14 @@ class EvolutionMethod {
   /// Objeto que se usa (piedra) o que lleva equipado.
   final String? item;
   final String? heldItem;
+
+  /// Lugar donde sube de nivel (Leafeon, Glaceon).
+  final String? location;
+
+  /// Movimiento, o tipo de movimiento, que tiene que conocer (Ambipom,
+  /// Sylveon).
+  final String? knownMove;
+  final String? knownMoveType;
 }
 
 /// Etapa de la cadena evolutiva: una especie y de cual evoluciona.

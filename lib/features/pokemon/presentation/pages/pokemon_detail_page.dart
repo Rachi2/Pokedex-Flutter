@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pokedex/core/error/failure.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
+import 'package:pokedex/features/pokemon/domain/entities/pokemon_detail.dart';
 
 import '../providers/catalog_provider.dart';
 import '../providers/pokemon_detail_provider.dart';
+import '../providers/pokemon_full_detail_provider.dart';
+import '../widgets/catalog_state_views.dart';
+import '../widgets/detail/pokemon_detail_view.dart';
 import '../widgets/pokemon_art_carousel.dart';
 import '../widgets/pokemon_list_tile.dart';
 import '../widgets/type_chip.dart';
 
-/// Pagina de detalle basico: un Pokemon leido solo de la base local.
+/// Ventana del detalle: muestra el detalle completo guardado en la base y,
+/// al abrirla, lo vuelve a descargar de PokeAPI.
 ///
-/// Sirve para demostrar que se puede navegar mientras se sincroniza.
-/// El detalle completo es de la entrega final.
+/// Si el detalle completo todavia no esta guardado (por ejemplo, sin
+/// conexion), muestra lo basico que hay del catalogo.
 class PokemonDetailPage extends ConsumerWidget {
   const PokemonDetailPage({super.key, required this.pokemonId});
 
@@ -20,8 +26,12 @@ class PokemonDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pokemon = ref.watch(pokemonDetailProvider(pokemonId));
+    final detail = ref.watch(fullDetailProvider(pokemonId));
+    final download = ref.watch(detailDownloadProvider(pokemonId));
+    final basic = ref.watch(pokemonDetailProvider(pokemonId)).value;
+    final typeChart = ref.watch(typeChartProvider).value;
     final syncStatus = ref.watch(catalogSyncStatusProvider).value;
+    void retry() => ref.read(detailDownloadProvider(pokemonId).notifier).load();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,13 +41,28 @@ class PokemonDetailPage extends ConsumerWidget {
           const SizedBox(width: 16),
         ],
       ),
-      body: switch (pokemon) {
-        AsyncData(value: final Pokemon found) => _DetailBody(pokemon: found),
-        AsyncData() => const Center(
-          child: Text('Este Pokémon no está guardado en el dispositivo.'),
+      body: switch (detail) {
+        AsyncData(value: final PokemonDetail full) => PokemonDetailView(
+          detail: full,
+          typeChart: typeChart,
+          onOpenPokemon: (id) => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => PokemonDetailPage(pokemonId: id),
+            ),
+          ),
         ),
-        AsyncError() => const Center(
-          child: Text('No se pudo leer el Pokémon.'),
+        // Todavia no hay detalle completo: lo basico del catalogo, si esta.
+        AsyncData() when basic != null => _DetailBody(
+          pokemon: basic,
+          footer: _DownloadNote(download: download, onRetry: retry),
+        ),
+        AsyncData() when download.failure != null => ErrorView(
+          failure: download.failure!,
+          onRetry: retry,
+        ),
+        AsyncError() => ErrorView(
+          failure: const UnknownFailure(),
+          onRetry: retry,
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
@@ -45,11 +70,57 @@ class PokemonDetailPage extends ConsumerWidget {
   }
 }
 
+/// Leyenda de la descarga: debajo del detalle basico, dice si el completo
+/// esta bajando o si fallo, con Reintentar.
+class _DownloadNote extends StatelessWidget {
+  const _DownloadNote({required this.download, required this.onRetry});
+
+  final DetailDownloadState download;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    if (download.isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const LinearProgressIndicator(),
+          const SizedBox(height: 8),
+          Text('Descargando el detalle completo…', style: muted),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'El detalle completo se descarga cuando hay conexión.',
+            style: muted,
+          ),
+        ),
+        TextButton.icon(
+          onPressed: onRetry,
+          icon: const Icon(Icons.refresh_rounded),
+          label: const Text('Reintentar'),
+        ),
+      ],
+    );
+  }
+}
+
 /// Cuerpo del detalle: carrusel, numero, nombre, tipos y datos guardados.
 class _DetailBody extends StatelessWidget {
-  const _DetailBody({required this.pokemon});
+  const _DetailBody({required this.pokemon, required this.footer});
 
   final Pokemon pokemon;
+
+  /// Lo que va al final: el estado de la descarga del detalle completo.
+  final Widget footer;
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +166,7 @@ class _DetailBody extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         _SavedDataCard(pokemon: pokemon),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
-          child: Text(
-            'Estadísticas, habilidades, evoluciones y movimientos llegan en '
-            'la entrega final.',
-            style: textTheme.bodySmall?.copyWith(color: muted),
-          ),
-        ),
+        Padding(padding: const EdgeInsets.fromLTRB(4, 16, 4, 0), child: footer),
       ],
     );
   }
