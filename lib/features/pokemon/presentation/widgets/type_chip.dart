@@ -92,3 +92,26 @@ class TypeChip extends StatelessWidget {
     );
   }
 }
+
+/// Tira de tipos: los chips en una sola linea. Si no caben (texto grande),
+/// se recortan en vez de saltar a otra linea y desbordar la tarjeta, que
+/// tiene alto fijo.
+class TypeChipStrip extends StatelessWidget {
+  const TypeChipStrip({super.key, required this.types});
+
+  final List<PokemonType> types;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Row(
+          spacing: 6,
+          children: [for (final t in types) TypeChip(type: t)],
+        ),
+      ),
+    );
+  }
+}

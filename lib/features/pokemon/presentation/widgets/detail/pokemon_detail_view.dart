@@ -22,7 +22,11 @@ class PokemonDetailView extends StatefulWidget {
     required this.detail,
     required this.typeChart,
     this.onOpenPokemon,
+    this.favoriteButton,
   });
+
+  /// Corazon de favoritos junto al chip Shiny, o null para no mostrarlo.
+  final Widget? favoriteButton;
 
   final PokemonDetail detail;
   final TypeChart? typeChart;
@@ -75,6 +79,7 @@ class _PokemonDetailViewState extends State<PokemonDetailView> {
                   ],
                 ),
               ),
+              ?widget.favoriteButton,
               FilterChip(
                 label: const Text('Shiny'),
                 tooltip: 'Ver la versión shiny',
