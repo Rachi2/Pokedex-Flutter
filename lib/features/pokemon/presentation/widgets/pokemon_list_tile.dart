@@ -28,14 +28,24 @@ extension PokemonDisplay on Pokemon {
   Color imageInk(ThemeData theme) => types.isEmpty
       ? theme.colorScheme.onSurfaceVariant
       : TypeStyle.of(types.first.name).foregroundFor(theme.brightness);
+
+  /// Frase para el lector de pantalla: nombre, número y tipos.
+  String get semanticSummary {
+    final typeNames = types.map((t) => TypeStyle.of(t.name).label).join(' y ');
+    return '$displayName, número $nationalDexNumber'
+        '${typeNames.isEmpty ? '' : ', tipo $typeNames'}';
+  }
 }
 
 /// Tarjeta de lista: imagen, nombre, número y tipos. Tocarla abre el detalle.
+/// A la derecha va [trailing] (el corazón de favoritos) o, si no hay, una
+/// flecha.
 class PokemonListTile extends StatelessWidget {
   const PokemonListTile({
     super.key,
     required this.pokemon,
     required this.onTap,
+    this.trailing,
   });
 
   /// Alto fijo de cada fila (88 de tarjeta + 8 de separación). La lista lo
@@ -55,91 +65,99 @@ class PokemonListTile extends StatelessWidget {
   final Pokemon pokemon;
   final VoidCallback onTap;
 
+  /// Lo que va a la derecha, con su propio toque y su propia etiqueta para
+  /// el lector de pantalla.
+  final Widget? trailing;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final types = pokemon.types;
 
-    final typeNames = types.map((t) => TypeStyle.of(t.name).label).join(' y ');
-
-    // Una sola etiqueta para el lector de pantalla en vez de leer cada
-    // pedazo por separado.
-    return Semantics(
-      button: true,
-      label:
-          '${pokemon.displayName}, número ${pokemon.nationalDexNumber}'
-          '${typeNames.isEmpty ? '' : ', tipo $typeNames'}',
-      onTap: onTap,
-      excludeSemantics: true,
-      child: Card(
-        margin: margin,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Container(
-                  width: _boxSize,
-                  height: _boxSize,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: pokemon.imageTint(theme),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: PokemonImage(
-                    url: pokemon.imageUrl,
-                    size: _imageSize,
-                    semanticLabel: 'Imagen de ${pokemon.displayName}',
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return Card(
+      margin: margin,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+          child: Row(
+            children: [
+              Expanded(
+                // Una sola etiqueta para el lector de pantalla en vez de
+                // leer cada pedazo por separado. El corazón queda fuera
+                // para que se pueda tocar aparte.
+                child: Semantics(
+                  button: true,
+                  label: pokemon.semanticSummary,
+                  onTap: onTap,
+                  excludeSemantics: true,
+                  child: Row(
                     children: [
-                      // Nombre y número en la misma línea, alineados por la
-                      // base del texto aunque tengan distinto tamaño.
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              pokemon.displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            pokemon.dexLabel,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: scheme.onSurfaceVariant,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
+                      Container(
+                        width: _boxSize,
+                        height: _boxSize,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: pokemon.imageTint(theme),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: PokemonImage(
+                          url: pokemon.imageUrl,
+                          size: _imageSize,
+                          semanticLabel: 'Imagen de ${pokemon.displayName}',
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Nombre y número en la misma línea, alineados
+                            // por la base del texto aunque tengan distinto
+                            // tamaño.
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    pokemon.displayName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  pokemon.dexLabel,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        children: [for (final t in types) TypeChip(type: t)],
+                            const SizedBox(height: 6),
+                            TypeChipStrip(types: types),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: scheme.outline),
-              ],
-            ),
+              ),
+              trailing ??
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Icon(Icons.chevron_right, color: scheme.outline),
+                  ),
+            ],
           ),
         ),
       ),
