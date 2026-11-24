@@ -17,6 +17,7 @@ class TypesTable extends Table {
 /// Tabla pokemon_types: el puente entre cada Pokémon y sus tipos, con el
 /// slot (1 principal, 2 secundario).
 @DataClassName('PokemonTypeRow')
+@TableIndex(name: 'pokemon_types_type_idx', columns: {#typeId})
 class PokemonTypesTable extends Table {
   @override
   String get tableName => 'pokemon_types';

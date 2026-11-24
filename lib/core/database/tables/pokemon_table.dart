@@ -8,6 +8,7 @@ import 'package:drift/drift.dart';
 @TableIndex(name: 'pokemon_name_idx', columns: {#name})
 @TableIndex(name: 'pokemon_dex_number_idx', columns: {#dexNumber})
 @TableIndex(name: 'pokemon_gen_idx', columns: {#generationId})
+@TableIndex(name: 'pokemon_bst_idx', columns: {#baseStatTotal})
 class PokemonTable extends Table {
   @override
   String get tableName => 'pokemon';
@@ -22,6 +23,7 @@ class PokemonTable extends Table {
   IntColumn get weight => integer().nullable()();
   IntColumn get generationId => integer().nullable()();
   BoolColumn get isDefault => boolean().withDefault(const Constant(true))();
+  IntColumn get baseStatTotal => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
