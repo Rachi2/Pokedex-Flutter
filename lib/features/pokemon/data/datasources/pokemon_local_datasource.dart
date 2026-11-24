@@ -118,4 +118,22 @@ class PokemonLocalDataSource {
 
     return byId.values.toList();
   }
+
+  /// Mostrador de favoritos: los Pokémon marcados con sus tipos, del último
+  /// que se marcó al primero. Incluye formas no principales (megas).
+  Stream<List<PokemonWithTypes>> watchFavorites() {
+    final pokemon = _db.pokemonTable;
+    final link = _db.pokemonTypesTable;
+    final favorites = _db.favoritesTable;
+
+    final query = _withTypes()
+      ..join([innerJoin(favorites, favorites.pokemonId.equalsExp(pokemon.id))])
+      ..orderBy([
+        OrderingTerm.desc(favorites.createdAt),
+        OrderingTerm.desc(pokemon.id),
+        OrderingTerm.asc(link.slot),
+      ]);
+
+    return query.watch().map(_group);
+  }
 }
