@@ -11,6 +11,9 @@ abstract class PokemonRepository {
     CatalogFilter filter = const CatalogFilter(),
   ]);
 
+  /// Emite cuantos Pokemon del catalogo hay guardados en el telefono.
+  Stream<int> watchSavedCount();
+
   /// Emite un Pokemon, o null si no esta guardado.
   Stream<Pokemon?> watchPokemon(int id);
 

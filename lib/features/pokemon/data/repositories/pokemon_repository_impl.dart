@@ -33,6 +33,9 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
+  Stream<int> watchSavedCount() => _local.watchSavedCount();
+
+  @override
   Stream<Pokemon?> watchPokemon(int id) {
     return _local
         .watchById(id)
@@ -59,6 +62,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
       state: row.status,
       lastSyncedAt: row.lastSuccessAt,
       hasMorePages: total == null || row.nextOffset < total,
+      totalRemote: total,
     );
   }
 }

@@ -15,6 +15,7 @@ import 'domain/usecases/refresh_catalog.dart';
 import 'domain/usecases/watch_catalog.dart';
 import 'domain/usecases/watch_catalog_sync.dart';
 import 'domain/usecases/watch_pokemon.dart';
+import 'domain/usecases/watch_saved_count.dart';
 import 'domain/usecases/watch_pokemon_detail.dart';
 import 'domain/usecases/watch_type_chart.dart';
 
@@ -78,6 +79,10 @@ final watchCatalogSyncProvider = Provider<WatchCatalogSync>((ref) {
 
 final watchPokemonProvider = Provider<WatchPokemon>((ref) {
   return WatchPokemon(ref.watch(pokemonRepositoryProvider));
+});
+
+final watchSavedCountProvider = Provider<WatchSavedCount>((ref) {
+  return WatchSavedCount(ref.watch(pokemonRepositoryProvider));
 });
 
 /// Custodia local del detalle: lee y escribe el detalle en Drift.
