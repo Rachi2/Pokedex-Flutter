@@ -3,6 +3,7 @@ import 'package:pokedex/core/database/sync_metadata_dao.dart';
 import 'package:pokedex/features/pokemon/domain/entities/catalog_sync_status.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 import 'package:pokedex/features/pokemon/domain/repositories/pokemon_repository.dart';
+import 'package:pokedex/features/pokemon/domain/entities/catalog_filter.dart';
 
 import '../datasources/pokemon_local_datasource.dart';
 import '../mappers/pokemon_mapper.dart';
@@ -23,10 +24,12 @@ class PokemonRepositoryImpl implements PokemonRepository {
   final CatalogSyncCoordinator _coordinator;
 
   @override
-  Stream<List<Pokemon>> watchCatalog() {
-    return _local.watchCatalog().map(
-      (rows) => rows.map(PokemonMapper.toEntity).toList(),
-    );
+  Stream<List<Pokemon>> watchCatalog([
+    CatalogFilter filter = const CatalogFilter(),
+  ]) {
+    return _local
+        .watchCatalog(filter)
+        .map((rows) => rows.map(PokemonMapper.toEntity).toList());
   }
 
   @override

@@ -1,11 +1,15 @@
 import '../entities/catalog_sync_status.dart';
 import '../entities/pokemon.dart';
+import '../entities/catalog_filter.dart';
 
 /// Contrato del catalogo: lo que la presentacion puede pedir, sin saber de
 /// donde salen los datos.
 abstract class PokemonRepository {
-  /// Emite la lista guardada en la base local cada vez que cambia.
-  Stream<List<Pokemon>> watchCatalog();
+  /// Emite la lista guardada que pasa el [filter] (busqueda, tipo,
+  /// generacion y orden) cada vez que cambia la base local.
+  Stream<List<Pokemon>> watchCatalog([
+    CatalogFilter filter = const CatalogFilter(),
+  ]);
 
   /// Emite un Pokemon, o null si no esta guardado.
   Stream<Pokemon?> watchPokemon(int id);
