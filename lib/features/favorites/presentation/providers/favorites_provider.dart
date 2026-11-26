@@ -15,7 +15,7 @@ final favoriteIdsProvider = StreamProvider<Set<int>>((ref) {
 final isFavoriteProvider = Provider.family<bool, int>((ref, pokemonId) {
   return ref.watch(
     favoriteIdsProvider.select(
-          (ids) => ids.value?.contains(pokemonId) ?? false,
+      (ids) => ids.value?.contains(pokemonId) ?? false,
     ),
   );
 });
@@ -29,8 +29,8 @@ final favoritesListProvider = StreamProvider<List<Pokemon>>((ref) {
 /// Interruptor de favoritos: marca o desmarca un Pokemon. No hace falta
 /// tocar el estado a mano: Drift avisa a los streams de arriba.
 final favoriteToggleProvider = Provider<Future<bool> Function(int pokemonId)>((
-    ref,
-    ) {
+  ref,
+) {
   final repository = ref.watch(favoritesRepositoryProvider);
   return repository.toggleFavorite;
 });

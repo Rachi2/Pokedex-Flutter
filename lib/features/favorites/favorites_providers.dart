@@ -11,8 +11,8 @@ import 'domain/repositories/favorites_repository.dart';
 
 /// Libreta en Drift: el datasource de la tabla favorites.
 final favoritesLocalDataSourceProvider = Provider<FavoritesLocalDataSource>((
-    ref,
-    ) {
+  ref,
+) {
   return FavoritesLocalDataSource(ref.watch(databaseProvider));
 });
 
