@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/core_providers.dart';
 import '../../../../core/network/api_outage_simulator.dart';
 import '../../../pokemon/presentation/pages/detail_preview_page.dart';
+import '../../../trivia/presentation/pages/trivia_preview_page.dart';
 
 /// Tablero de ajustes. Por ahora solo trae, en modo depuracion, el
 /// interruptor del simulador de API caida; el tema y el idioma se agregan
@@ -47,6 +48,20 @@ class SettingsPage extends ConsumerWidget {
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const DetailPreviewPage(),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.quiz_outlined),
+            title: const Text('Vista previa de la trivia'),
+            subtitle: const Text(
+              'Una partida con datos de prueba, en español e inglés, mientras '
+              'sus providers no están conectados.',
+            ),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const TriviaPreviewPage(),
               ),
             ),
           ),
