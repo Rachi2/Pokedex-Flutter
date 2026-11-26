@@ -36,6 +36,7 @@ class PokemonDto {
     this.height,
     this.weight,
     this.generationId,
+    this.baseStatTotal,
   });
 
   final int id;
@@ -51,6 +52,10 @@ class PokemonDto {
 
   /// Generacion en la que aparecio la especie (1 a 9).
   final int? generationId;
+
+  /// Total base: la suma de las seis estadisticas base, o null si PokeAPI
+  /// no las mando.
+  final int? baseStatTotal;
 
   /// Imagen a mostrar: el artwork oficial y, si no existe, el sprite normal.
   String? get imageUrl => artworkUrl ?? spriteUrl;
@@ -94,6 +99,18 @@ class PokemonDto {
         ? species['generation_id']
         : null;
 
+    // Suma de las seis estadisticas; si no llego ninguna, queda null.
+    int? baseStatTotal;
+    final rawStats = json['pokemonstats'];
+    if (rawStats is List) {
+      for (final rawStat in rawStats) {
+        final baseStat = rawStat is Map<String, dynamic>
+            ? rawStat['base_stat']
+            : null;
+        if (baseStat is int) baseStatTotal = (baseStatTotal ?? 0) + baseStat;
+      }
+    }
+
     return PokemonDto(
       id: id,
       name: name,
@@ -104,6 +121,7 @@ class PokemonDto {
       height: height is int ? height : null,
       weight: weight is int ? weight : null,
       generationId: generationId is int ? generationId : null,
+      baseStatTotal: baseStatTotal,
     );
   }
 }

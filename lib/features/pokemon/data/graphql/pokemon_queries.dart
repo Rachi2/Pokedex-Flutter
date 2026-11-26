@@ -8,6 +8,7 @@ const catalogPageSize = 50;
 ///   (sin megas ni formas regionales).
 /// - pokemon_aggregate devuelve el total para saber cuantos hay en PokeAPI.
 /// - Altura, peso y generacion van a las columnas del mismo nombre.
+/// - Las seis estadisticas base, que el DTO suma para el orden por total base.
 /// - De sprites solo se piden dos rutas del JSON: el artwork oficial
 ///   y el sprite normal como respaldo.
 const catalogQuery = r'''
@@ -25,6 +26,9 @@ query Catalog($limit: Int!, $offset: Int!) {
     weight
     pokemonspecy {
       generation_id
+    }
+    pokemonstats {
+      base_stat
     }
     pokemontypes(order_by: {slot: asc}) {
       slot

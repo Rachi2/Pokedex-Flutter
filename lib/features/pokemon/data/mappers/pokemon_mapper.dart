@@ -28,6 +28,7 @@ class PokemonMapper {
         height: dto.height,
         weight: dto.weight,
         generationId: dto.generationId,
+        baseStatTotal: dto.baseStatTotal,
         // Se coloca true fijo porque la consulta del catalogo solo trae formas normales
         isDefault: true,
       ),
