@@ -50,6 +50,7 @@ dart run build_runner build
 | `connectivity_plus` | Detectar cambios de red | Avisa cuándo cambia la red; la disponibilidad real se comprueba aparte contra la API |
 | `cached_network_image` | Mostrar y guardar imágenes | Guarda las imágenes en disco para verlas sin conexión |
 | `flutter_cache_manager` | Configurar la caché de imágenes | Fija el límite de archivos y el tiempo sin uso antes de borrarlos; ya venía dentro de `cached_network_image` y se declara porque se usa directamente |
+| `share_plus` | Compartir la Pokémon Card | Abre el menú de compartir del sistema y acepta la imagen generada en memoria, sin guardarla antes en un archivo |
 | `path_provider`, `path` | Ubicar el archivo de la base | Dan la carpeta de documentos de la aplicación y arman la ruta |
 | `sqlite3_flutter_libs` | Soporte nativo de SQLite | Dependencia inicial del proyecto; su versión actual está marcada como descontinuada y queda pendiente revisar si se puede retirar |
 | `cupertino_icons` | Íconos de iOS | Viene con la plantilla de Flutter |
