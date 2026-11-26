@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/core/di/core_providers.dart';
 
+import 'data/datasources/catalog_preferences_local_datasource.dart';
 import 'data/datasources/pokemon_detail_local_datasource.dart';
 import 'data/datasources/pokemon_local_datasource.dart';
 import 'data/datasources/pokemon_remote_datasource.dart';
@@ -12,6 +13,7 @@ import 'domain/repositories/pokemon_repository.dart';
 import 'domain/usecases/load_next_page.dart';
 import 'domain/usecases/load_pokemon_detail.dart';
 import 'domain/usecases/refresh_catalog.dart';
+import 'domain/usecases/remember_catalog_filter.dart';
 import 'domain/usecases/watch_catalog.dart';
 import 'domain/usecases/watch_catalog_sync.dart';
 import 'domain/usecases/watch_pokemon.dart';
@@ -36,6 +38,12 @@ final pokemonLocalDataSourceProvider = Provider<PokemonLocalDataSource>((ref) {
   return PokemonLocalDataSource(ref.watch(databaseProvider));
 });
 
+/// Memoria del buscador: guarda el filtro del catalogo en preferences.
+final catalogPreferencesLocalDataSourceProvider =
+    Provider<CatalogPreferencesLocalDataSource>((ref) {
+      return CatalogPreferencesLocalDataSource(ref.watch(databaseProvider));
+    });
+
 /// Director de descargas: el coordinador, que deja de escuchar la red al
 /// apagarse Riverpod.
 final catalogSyncCoordinatorProvider = Provider<CatalogSyncCoordinator>((ref) {
@@ -51,12 +59,13 @@ final catalogSyncCoordinatorProvider = Provider<CatalogSyncCoordinator>((ref) {
   return coordinator;
 });
 
-/// Repositorio del catalogo, armado con sus tres piezas.
+/// Repositorio del catalogo, armado con sus cuatro piezas.
 final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
   return PokemonRepositoryImpl(
     local: ref.watch(pokemonLocalDataSourceProvider),
     syncDao: ref.watch(databaseProvider).syncMetadataDao,
     coordinator: ref.watch(catalogSyncCoordinatorProvider),
+    preferences: ref.watch(catalogPreferencesLocalDataSourceProvider),
   );
 });
 
@@ -83,6 +92,10 @@ final watchPokemonProvider = Provider<WatchPokemon>((ref) {
 
 final watchSavedCountProvider = Provider<WatchSavedCount>((ref) {
   return WatchSavedCount(ref.watch(pokemonRepositoryProvider));
+});
+
+final rememberCatalogFilterProvider = Provider<RememberCatalogFilter>((ref) {
+  return RememberCatalogFilter(ref.watch(pokemonRepositoryProvider));
 });
 
 /// Custodia local del detalle: lee y escribe el detalle en Drift.

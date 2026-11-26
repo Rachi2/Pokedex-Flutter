@@ -14,6 +14,12 @@ abstract class PokemonRepository {
   /// Emite cuantos Pokemon del catalogo hay guardados en el telefono.
   Stream<int> watchSavedCount();
 
+  /// Lee el filtro que el usuario dejo la ultima vez, o el de por defecto.
+  Future<CatalogFilter> loadSavedFilter();
+
+  /// Guarda el filtro para la proxima vez que se abra la app.
+  Future<void> saveFilter(CatalogFilter filter);
+
   /// Emite un Pokemon, o null si no esta guardado.
   Stream<Pokemon?> watchPokemon(int id);
 
