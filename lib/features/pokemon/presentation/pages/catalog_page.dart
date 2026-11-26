@@ -1,29 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pokedex/features/favorites/presentation/widgets/favorite_heart.dart';
 
 import '../../domain/entities/pokemon.dart';
+import '../providers/catalog_filter_provider.dart';
 import '../providers/catalog_provider.dart';
 import '../providers/catalog_state.dart';
 import '../widgets/catalog_state_views.dart';
+import '../widgets/catalog_toolbar.dart';
+import '../widgets/pokemon_grid_card.dart';
 import '../widgets/pokemon_list_tile.dart';
 import 'pokemon_detail_page.dart';
 
-/// Portada: la pestaña del catálogo. Escucha [catalogProvider] y muestra la
-/// vista de cada estado; nunca habla con PokeAPI ni con Drift directamente.
+/// Portada: la pestaña del catálogo. Escucha [catalogProvider] y el filtro,
+/// y muestra la barra de búsqueda y la vista de cada estado; nunca habla con
+/// PokeAPI ni con Drift directamente.
 ///
 /// No tiene Scaffold propio: va dentro del AppShell, que ya pone la barra
 /// superior, el indicador de conectividad y la navegación inferior.
-class CatalogPage extends ConsumerWidget {
+class CatalogPage extends ConsumerStatefulWidget {
   const CatalogPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CatalogPage> createState() => _CatalogPageState();
+}
+
+class _CatalogPageState extends ConsumerState<CatalogPage> {
+  var _layout = CatalogLayout.list;
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(catalogProvider);
     final notifier = ref.read(catalogProvider.notifier);
+    final filterNotifier = ref.read(catalogFilterProvider.notifier);
 
     // CatalogState es sellada: si se agrega un estado, esto no compila
     // hasta que se decida cómo mostrarlo.
-    return switch (state) {
+    final body = switch (state) {
       CatalogLoading() => const LoadingView(),
       CatalogEmpty(:final message) => EmptyView(
         message: message,
@@ -33,24 +46,47 @@ class CatalogPage extends ConsumerWidget {
         failure: failure,
         onRetry: notifier.retry,
       ),
+      CatalogNoResults() => NoResultsView(onClear: filterNotifier.clear),
       CatalogData data => _CatalogList(
         data: data,
+        layout: _layout,
         onLoadMore: notifier.loadMore,
         onRefresh: notifier.refresh,
       ),
     };
+
+    // La barra solo tiene sentido cuando ya hay algo guardado que filtrar.
+    final showToolbar = state is CatalogData || state is CatalogNoResults;
+
+    return Column(
+      children: [
+        if (showToolbar)
+          CatalogToolbar(
+            filter: ref.watch(catalogFilterProvider),
+            onFilterChanged: filterNotifier.update,
+            layout: _layout,
+            onLayoutChanged: (layout) => setState(() => _layout = layout),
+            savedCount: ref.watch(catalogSavedCountProvider).value,
+            totalCount: ref.watch(catalogSyncStatusProvider).value?.totalRemote,
+          ),
+        Expanded(child: body),
+      ],
+    );
   }
 }
 
-/// Listado desplazable: filas de alto fijo, pull-to-refresh y volver arriba.
+/// Listado desplazable: filas o fichas de alto fijo, pull-to-refresh y
+/// volver arriba.
 class _CatalogList extends StatefulWidget {
   const _CatalogList({
     required this.data,
+    required this.layout,
     required this.onLoadMore,
     required this.onRefresh,
   });
 
   final CatalogData data;
+  final CatalogLayout layout;
   final Future<void> Function() onLoadMore;
   final Future<void> Function() onRefresh;
 
@@ -123,6 +159,52 @@ class _CatalogListState extends State<_CatalogList> {
     );
   }
 
+  /// Corazon de cada Pokemon, conectado a favoritos.
+  Widget _heart(Pokemon pokemon) =>
+      FavoriteHeart(pokemonId: pokemon.id, pokemonName: pokemon.displayName);
+
+  /// Elementos de la lista: filas o fichas en columnas. Todos miden lo
+  /// mismo, asi la lista calcula posiciones sin medir cada uno y solo
+  /// construye los visibles.
+  Widget _buildItems(BuildContext context, List<Pokemon> pokemon) {
+    return switch (widget.layout) {
+      CatalogLayout.list => SliverPadding(
+        padding: const EdgeInsets.only(top: 4),
+        sliver: SliverFixedExtentList(
+          itemExtent: PokemonListTile.height,
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final item = pokemon[index];
+            return PokemonListTile(
+              key: ValueKey(item.id),
+              pokemon: item,
+              onTap: () => _openDetail(context, item),
+              trailing: _heart(item),
+            );
+          }, childCount: pokemon.length),
+        ),
+      ),
+      CatalogLayout.grid => SliverPadding(
+        padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+        sliver: SliverGrid.builder(
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 220,
+            mainAxisExtent: PokemonGridCard.height,
+          ),
+          itemCount: pokemon.length,
+          itemBuilder: (context, index) {
+            final item = pokemon[index];
+            return PokemonGridCard(
+              key: ValueKey(item.id),
+              pokemon: item,
+              onTap: () => _openDetail(context, item),
+              trailing: _heart(item),
+            );
+          },
+        ),
+      ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final pokemon = widget.data.pokemon;
@@ -134,31 +216,24 @@ class _CatalogListState extends State<_CatalogList> {
           onRefresh: widget.onRefresh,
           child: NotificationListener<ScrollNotification>(
             onNotification: _onScroll,
-            child: ListView.builder(
+            child: CustomScrollView(
               controller: _scrollController,
               // Siempre deslizable, para que el pull-to-refresh funcione aunque
               // la lista sea corta.
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              // Todas las filas miden lo mismo: la lista calcula posiciones sin
-              // medir cada una y solo construye las visibles.
-              itemExtent: PokemonListTile.height,
-              // Un elemento extra al final para el pie (cargando, error o fin).
-              itemCount: pokemon.length + 1,
-              itemBuilder: (context, index) {
-                if (index == pokemon.length) {
-                  return _ListFooter(
-                    data: widget.data,
-                    onLoadMore: widget.onLoadMore,
-                  );
-                }
-                final item = pokemon[index];
-                return PokemonListTile(
-                  key: ValueKey(item.id),
-                  pokemon: item,
-                  onTap: () => _openDetail(context, item),
-                );
-              },
+              slivers: [
+                _buildItems(context, pokemon),
+                // El pie (cargando, error o fin) va despues de los Pokemon.
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: PokemonListTile.height,
+                    child: _ListFooter(
+                      data: widget.data,
+                      onLoadMore: widget.onLoadMore,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

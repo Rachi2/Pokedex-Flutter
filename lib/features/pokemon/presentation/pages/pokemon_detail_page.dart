@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/core/error/failure.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
+import 'package:pokedex/features/favorites/presentation/widgets/favorite_heart.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon_detail.dart';
 
@@ -38,7 +39,10 @@ class PokemonDetailPage extends ConsumerWidget {
         // El indicador sigue visible fuera del catalogo.
         actions: [
           ConnectivityIndicator(syncStatus: syncStatus, compact: true),
-          const SizedBox(width: 16),
+          const SizedBox(width: 4),
+          // El mismo corazon de la lista: marcar aqui se ve alla al volver.
+          FavoriteHeart(pokemonId: pokemonId, pokemonName: basic?.displayName),
+          const SizedBox(width: 8),
         ],
       ),
       body: switch (detail) {

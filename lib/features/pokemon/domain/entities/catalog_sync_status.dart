@@ -7,6 +7,7 @@ class CatalogSyncStatus {
     required this.state,
     this.lastSyncedAt,
     this.hasMorePages = true,
+    this.totalRemote,
   });
 
   final SyncState state;
@@ -17,13 +18,18 @@ class CatalogSyncStatus {
   /// false cuando ya se descargó la última página.
   final bool hasMorePages;
 
+  /// Cuantos Pokemon tiene PokeAPI, o null si todavia no se sabe.
+  final int? totalRemote;
+
   @override
   bool operator ==(Object other) =>
       other is CatalogSyncStatus &&
       other.state == state &&
       other.lastSyncedAt == lastSyncedAt &&
-      other.hasMorePages == hasMorePages;
+      other.hasMorePages == hasMorePages &&
+      other.totalRemote == totalRemote;
 
   @override
-  int get hashCode => Object.hash(state, lastSyncedAt, hasMorePages);
+  int get hashCode =>
+      Object.hash(state, lastSyncedAt, hasMorePages, totalRemote);
 }

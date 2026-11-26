@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/features/connectivity/presentation/widgets/connectivity_indicator.dart';
+import 'package:pokedex/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:pokedex/features/pokemon/presentation/pages/catalog_page.dart';
 import 'package:pokedex/features/pokemon/presentation/providers/catalog_provider.dart';
 import 'package:pokedex/features/settings/presentation/pages/settings_page.dart';
@@ -56,11 +57,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             // asi el catalogo no pierde la posicion del scroll.
             child: IndexedStack(
               index: _selectedIndex,
-              children: const [
-                CatalogPage(),
-                _ComingSoon(title: 'Favoritos'),
-                SettingsPage(),
-              ],
+              children: const [CatalogPage(), FavoritesPage(), SettingsPage()],
             ),
           ),
         ],
@@ -169,29 +166,4 @@ class _PokeballPainter extends CustomPainter {
   @override
   bool shouldRepaint(_PokeballPainter oldDelegate) =>
       oldDelegate.outline != outline;
-}
-
-/// Pestaña provisional: Favoritos todavia no existe.
-class _ComingSoon extends StatelessWidget {
-  const _ComingSoon({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.construction_outlined, size: 48),
-          const SizedBox(height: 12),
-          Text(title, style: textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text('Próximamente', style: textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
 }
