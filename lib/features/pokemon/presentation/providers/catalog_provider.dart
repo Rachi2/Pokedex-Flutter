@@ -2,15 +2,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/core/di/core_providers.dart';
 import 'package:pokedex/core/error/failure.dart';
 import 'package:pokedex/features/connectivity/domain/entities/service_status.dart';
+import 'package:pokedex/features/pokemon/domain/entities/catalog_filter.dart';
 import 'package:pokedex/features/pokemon/domain/entities/catalog_sync_status.dart';
 import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 import 'package:pokedex/features/pokemon/pokemon_providers.dart';
 
+import 'catalog_filter_provider.dart';
 import 'catalog_state.dart';
 
-/// Fuente de la lista: los Pokemon guardados en Drift, cada vez que cambian.
+/// Fuente de la lista: los Pokemon guardados en Drift que pasan el filtro
+/// aplicado, cada vez que cambian. Al cambiar el filtro se vuelve a
+/// suscribir; mientras llega la nueva lista se sigue viendo la anterior.
 final catalogPokemonProvider = StreamProvider<List<Pokemon>>((ref) {
-  return ref.watch(watchCatalogProvider)();
+  final filter = ref.watch(appliedCatalogFilterProvider);
+  return ref.watch(watchCatalogProvider)(filter);
 });
 
 /// Termometro de la sincronizacion: estado y fecha de la ultima.
@@ -29,6 +34,8 @@ class CatalogNotifier extends Notifier<CatalogState> {
   CatalogState build() {
     return buildCatalogState(
       pokemon: ref.watch(catalogPokemonProvider),
+      filter: ref.watch(appliedCatalogFilterProvider),
+      savedCount: ref.watch(catalogSavedCountProvider).value,
       sync: ref.watch(catalogSyncStatusProvider).value,
       service: ref.watch(serviceStatusProvider).value,
       actions: ref.watch(catalogActionsProvider),
@@ -53,6 +60,8 @@ class CatalogNotifier extends Notifier<CatalogState> {
 /// conectividad en el estado que ve la pantalla.
 CatalogState buildCatalogState({
   required AsyncValue<List<Pokemon>> pokemon,
+  CatalogFilter filter = const CatalogFilter(),
+  int? savedCount,
   required CatalogSyncStatus? sync,
   required ServiceStatus? service,
   required CatalogActionsState actions,
@@ -74,6 +83,15 @@ CatalogState buildCatalogState({
       hasMore: sync?.hasMorePages ?? true,
       loadMoreFailure: sync?.state == SyncState.error ? actions.failure : null,
     );
+  }
+
+  // Hay Pokemon guardados, pero ninguno pasa la busqueda o los filtros.
+  final isNarrowed =
+      filter.query.trim().isNotEmpty ||
+      filter.typeId != null ||
+      filter.generationId != null;
+  if (isNarrowed && (savedCount ?? 0) > 0) {
+    return const CatalogNoResults();
   }
 
   // No hay datos y no hay red: no hay nada que descargar.

@@ -4,7 +4,7 @@ import 'package:pokedex/features/pokemon/domain/entities/pokemon.dart';
 /// Estados de pantalla del catalogo: lo que tiene que mostrar.
 ///
 /// Es sellada: la pantalla usa un switch y Dart obliga a cubrir
-/// los cuatro casos.
+/// los cinco casos.
 sealed class CatalogState {
   const CatalogState();
 }
@@ -33,6 +33,12 @@ final class CatalogData extends CatalogState {
 
   /// Error de la ultima pagina que se intento cargar, si fallo.
   final Failure? loadMoreFailure;
+}
+
+/// Sin coincidencias: hay Pokemon guardados, pero ninguno pasa la busqueda
+/// o los filtros.
+final class CatalogNoResults extends CatalogState {
+  const CatalogNoResults();
 }
 
 /// Sin datos ni descarga: no hay nada guardado y no se puede descargar ahora.
