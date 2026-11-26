@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/core_providers.dart';
 import '../../../../core/network/api_outage_simulator.dart';
-import '../../../pokemon/presentation/pages/catalog_preview_page.dart';
 import '../../../pokemon/presentation/pages/detail_preview_page.dart';
 
 /// Tablero de ajustes. Por ahora solo trae, en modo depuracion, el
@@ -48,20 +47,6 @@ class SettingsPage extends ConsumerWidget {
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const DetailPreviewPage(),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.manage_search_rounded),
-            title: const Text('Vista previa del catálogo'),
-            subtitle: const Text(
-              'Búsqueda, filtros, orden, cuadrícula y favoritos con datos de '
-              'prueba, mientras sus providers no están conectados.',
-            ),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const CatalogPreviewPage(),
               ),
             ),
           ),
